@@ -1,0 +1,12 @@
+This article will contains scientific article about
+the process of generalization of CIP (BIS-1, BIS-2)
+schemes proposed by N. Khokhlov (2013) for 2D case.
+
+# Important:
+Init commit is the property of N. Khokhlov
+
+# Encoding:
+In vim type: ":e ++enc=cp866"
+
+# Compilation:
+pdflatex --shell-escape maiksamp.tex
