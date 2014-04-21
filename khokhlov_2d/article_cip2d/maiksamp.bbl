@@ -12,6 +12,13 @@
 \providecommand{\bibinfo}[2]{#2}
 \providecommand{\eprint}[2][]{\url{#2}}
 
+\bibitem[{\citenamefont{Холодов А.С.}(2008)}]{kholodov_2008}
+
+\refitem{article}
+\bibinfo{author}{\bibfnamefont{А.~С.} \bibnamefont{Холодов}},
+  \bibinfo{journal}{Энциклопедия низкотемпаратурной плазмы Т. VII-1 Ч. 2 М.: Янус-К?2008}
+  \textbf{\bibinfo{volume}{46}}, \bibinfo{pages}{141-174} (\bibinfo{year}{2008}).
+
 \bibitem[{\citenamefont{Courant and Lax}(1949)}]{Courant1949}
 
 \refitem{article}
