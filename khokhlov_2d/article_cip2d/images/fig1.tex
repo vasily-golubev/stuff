@@ -1,7 +1,10 @@
+% Для удаления белых мест использовать pdfcrop fig1.pdf
 \documentclass{article}
+\usepackage{preview}
 \usepackage{tikz}
+\PreviewEnvironment{tikzpicture}
 \begin{document}
-
+\pagenumbering{gobble}
 \begin{tikzpicture}[scale=3.0]
 	% Рисуем оси.
 	\draw (-2.0,0.0) -- (0.4,0.0);
