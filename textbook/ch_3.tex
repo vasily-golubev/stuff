@@ -1,0 +1,169 @@
+\begin{flushleft}
+
+\begin {tabular}  {p{2.20cm}  p{8.30cm}}
+{\bf\normalsize Теорема 4. }
+&
+\it{
+В случае регулярности (существования и единственности) решения пары двойственных задач P --- D
+справедливы соотношения
+$$
+\lim \limits_{\tau \to +0} \bar x(\tau, u) = x^{*}(u) , \quad
+\lim \limits_{\tau \to +0} \bar \Lambda(\tau, u) = \Lambda^{*}(u) \; ,
+$$
+где $\bar x(\tau, u)$ и $\bar \Lambda(\tau, u)$ -- решения системы (15) при фиксированном $u$.%
+}
+\end {tabular}
+
+\end{flushleft}
+
+
+
+\noindent
+\hbox{%
+\color[gray]{0.85}{ \vrule width 4.0mm } \hspace{.5em} \color[rgb]{0,0,0} \parbox{0.9\textwidth}%
+{{\bf Доказательство}
+
+\medskip
+\noindent
+Функция Лагранжа задачи P в регулярном случае при фиксированном $u$ имеет единственную седловую точку $\{x^{*}(u),\Lambda^{*}(u)\}.$
+Функция $U(\tau, x, \Lambda, u)$ всегда имеет единственную седловую точку при фиксированных $\tau,u$.
+Тогда, в силу теоремы 3, получаем, что для регулярной исходной задачи P
+$$
+\lim \limits_{\tau \to +0} \bar x(\tau, u) = x^{*}(u) , \quad
+\lim \limits_{\tau \to +0} \bar \Lambda(\tau, u) = \Lambda^{*}(u) \; .
+$$
+
+\medskip
+
+\noindent
+{\bf Теорема доказана.}}
+}
+
+
+
+\section{Свойства сглаженных аппроксимаций}
+%\addcontentsline{toc}{section}{Свойства сглаженных аппроксимаций}
+
+\noindent Рассмотрим теперь конкретные функции $Q (\tau, s)$, задающими правые части уравнений системы (15).
+В таблице 1 приведены некоторые их виды, представляющие интерес с точки зрения вычислительной практики.
+
+Тот факт, что
+$-\frac{\displaystyle \partial P}{\displaystyle \partial s}$ является функцией только одного аргумента
+$\frac{\displaystyle s}{\displaystyle \tau}$ (см. условие (6)), определяет специальный вид функции $Q(\tau,s),$
+а именно,  $Q(\tau,s) = \tau \Psi(s).$
+Действительно, функция $Q(\tau,s),$ как обратная к $-\frac{\displaystyle \partial P}{\displaystyle \partial s},$
+определяется соотношением
+$$
+ -\Phi^{-1}(s)   = \frac{\displaystyle Q(\tau,s)}{\displaystyle \tau} \; ,
+$$
+где функции $\Psi$ и $\Phi$ взаимно обратные. Поэтому $Q(\tau,s)=\tau \Psi(s).$\pagebreak
+
+
+\begin{center}
+{Таблица 1. Примеры различных типов штрафных функций}
+\end{center}
+\begin{center}
+\noindent
+\begin{tabular} {||c|c|c|c||}
+\hline
+\hline
+& & &  \\
+$P(\tau,s)$ & $-\frac{\displaystyle \partial P}{\displaystyle \partial s}$ &
+$Q(\tau,s)$ & $R(\tau,s)$ \\
+& & &  \\
+\hline
+\hline
+& & & \\
+$\tau e^{-\cfrac{ s}{ \tau}}$ & $e^{-\cfrac{ s}{ \tau}}$ & $\tau \ln \cfrac{1}{s}$ &
+$-\tau s \ln \frac{\displaystyle s}{\displaystyle e}$ \\
+& & &  \\
+\hline
+& & &  \\
+$-\tau \ln s$ & $\frac{\displaystyle \tau }{\displaystyle s }$ & $\frac{\displaystyle \tau }{\displaystyle s }$ & $\tau \ln s$ \\
+& & & \\
+\hline
+& & &   \\
+$
+\parbox{2cm}{\scriptsize Через элемен- тарные функции выражает- ся, но громоздко }
+$
+&
+$ \sqrt { \left( \frac{\displaystyle s }{\displaystyle \tau } \right)^2 {\displaystyle + 1} }
+\;\; {\displaystyle -} \;\; \frac{\displaystyle s }{\displaystyle \tau }$
+&
+$\frac{\displaystyle \tau }{\displaystyle 2 }
+\left (  \frac{\displaystyle 1 }{\displaystyle s } - s \right ) $ &
+$-\frac{\displaystyle \tau }{\displaystyle 2 }
+\left (  \frac{\displaystyle s^2 }{\displaystyle 2 } - \ln s \right ) $ \\
+& & &  \\
+\hline
+& & &   \\
+$\frac{\displaystyle \tau^2 }{\displaystyle s }$ & $ \left( \frac{\displaystyle \tau }{\displaystyle s } \right)^2$ &
+$\frac{\displaystyle \tau }{\displaystyle \sqrt{s} }$& $2\tau\sqrt{s}$ \\
+& & &  \\
+\hline
+& & &   \\
+$\parbox{2cm}{\scriptsize Через элемен- тарные функции не выража- ется }$ &
+$ \ln\left( 1 + e^{-\frac{\displaystyle s }{\displaystyle \tau }} \right) $ &
+$\tau \ln \cfrac{1}{e^{\displaystyle s} - 1}$ & $\parbox{2cm}{\scriptsize Через элемен- тарные функции не выража- ется }$ \\
+& & &  \\
+\hline
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\bigskip
+Отметим, что в практических расчетах важен вид лишь функций $Q(\tau,s),$ входящих в условие системы (15).
+Степень сложности остальных функций, приведенных в таблице 1, особой роли не играет.
+
+Соотношения (11)--(12) гарантируют близость значений функций $\overline x (\tau, u)$ и $ \overline \Lambda (\tau, u)$
+к значениям зависимостей $x^*(u)$ и $\lambda^*(u)$ там, где последние существуют и однозначны.
+
+Кроме того,
+функции $\overline x (\tau, u)$ и $ \overline \Lambda (\tau, u)$ определены и имеют положительные (в силу условий (6) и (13)) значения
+{\it для любых} параметров $u$ (включая значения, при которых задачи P или D несовместны),
+а также однозначны в точках переопределенности задач P или D.
+
+Функции $\overline x (\tau, u)$ и $ \overline \Lambda (\tau, u)$ допускают аппроксимацию по формуле Тейлора,
+поскольку к соотношениям (15) применима классическая теорема о неявных функциях \ref{s6}
+при условии, что $Q(\tau,s)$ достаточно гладкая. Отметим, что для штрафных функций, приведенных в таблице~1,
+порядок тейлоровской аппроксимации для $\overline x (\tau, u)$ и $ \overline \Lambda (\tau, u)$ может быть любым.
+
+
+Как уже отмечалось, вообще говоря, не любые классы штрафных функций могут применяться в рассматриваемом подходе.
+Во-первых, нельзя использовать {\it внешние} штрафные функции, например такие как:
+$$
+P(\tau,s) = \left\{
+\begin{array} {rr}
+0 \; , & \mbox{ при } s \ge 0 \; , \\
+\cfrac{s^2}{2\tau} \; , & \mbox{ при } s < 0 \; , \\
+\end{array}
+\right.
+$$
+поскольку в этом случае $-\cfrac{\partial P}{\partial s}$ не имеют обратной функции.
+
+
+
+
+\begin{figure}[tbph]
+\centerline{\includegraphics[width=4in,height=2.5in]{pictures/RisU-L.jpg}}
+\caption{График зависимости $U-L$ от $u$ для $\tau=0.1$ и $\tau=0.01$.}
+\end{figure}\label{RisU-L.jpg}
+\pagebreak
+
+\begin{figure}[tbph]
+\centerline{\includegraphics[width=4.4in,height=2.75in]{pictures/RisXTau=01.jpg}}
+\caption{Зависимость решений системы~(15) в примере~1 от значения параметра $u$ для $\tau=0.1$.}\label{RisXTau=01}
+%
+\bigskip
+\bigskip
+%
+\centerline{\includegraphics[width=4.4in,height=2.75in]{pictures/RisXTau=001.jpg}}
+\caption{Зависимость решений системы~(15) в примере~1 от значения параметра $u$ для $\tau=0.01$.}\label{RisXTau=001}
+\end{figure}
+
+
+
+
+\clearpage
