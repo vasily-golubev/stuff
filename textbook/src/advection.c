@@ -11,6 +11,8 @@
 
 // TODO Implement clear logic for stencil.
 #define S 1
+// TODO Fill this pattern and interpolate with it.
+double stencil[S + 1];
 
 double U_c[N], U_n[N];
 
