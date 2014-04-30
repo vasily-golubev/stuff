@@ -45,6 +45,9 @@ void singleStep(void) {
 			ind_1 += N; 
 		U_n[ind] = interpolatedValue(U_c[ind_0], U_c[ind_1]);
 	}
+	// FIXME For simplisity copy U_c = U_n
+	for (ind = 0; ind < N; ind++)
+		U_c[ind] = U_n[ind];
 }
 
 // FIXME The difference is only in this function + stencil (borders for for).
