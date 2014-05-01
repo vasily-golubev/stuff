@@ -1,2 +1,2 @@
 #!/bin/bash
-gcc -g advection.c advection.h -o advection
+gcc -g -DSECOND_ORDER advection.c advection.h -o advection

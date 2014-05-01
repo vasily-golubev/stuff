@@ -9,11 +9,20 @@
 #define tau (k * h / l)
 #define M (2.0 / l / tau)
 
-// TODO Implement clear logic for stencil.
-#define S 1
 // TODO Fill this pattern and interpolate with it.
+
+// 1st order.
+#ifdef FIRST_ORDER
+#define S 1
 int stencil[S + 1] = {-1, 0};
 double stencil_values[S + 1];
+#endif
+// 2nd order.
+#ifdef SECOND_ORDER
+#define S 2
+int stencil[S + 1] = {-1, 0, 1};
+double stencil_values[S + 1];
+#endif
 
 double U_c[N], U_n[N];
 
@@ -51,14 +60,27 @@ void singleStep(void) {
 }
 
 // FIXME The difference is only in this function + stencil (borders for for).
+#ifdef FIRST_ORDER
 double interpolatedValue(double *u) {
 	// Linear interpolation: y = a * x + b
 	double a = (u[1] - u[0]) / h;
 	double b = u[0];
-	double val = a * (-l * tau) + b;
+	double x = -l * tau;
+	double val = a * x + b;
 	return val;
 }
-
+#endif
+#ifdef SECOND_ORDER
+double interpolatedValue(double *u) {
+	// Quadratic interpolation: y = a * x^2 + b * x + c
+	double a = (u[2] - 2.0 * u[1] + u[0]) / 2.0 / h / h;
+	double b = (u[2] - u[0]) / 2.0 / h;
+	double c = u[1];
+	double x = -l * tau;
+	double val = a * x * x + b * x + c;
+	return val;
+}
+#endif
 void fillStencilValues(int ind) {
 	unsigned int j;
 	int ind_new;
@@ -66,7 +88,7 @@ void fillStencilValues(int ind) {
 		ind_new = ind + stencil[j];
 		if (ind_new < 0)
 			stencil_values[j] = U_c[ind_new + N];
-		else if (ind >= N)
+		else if (ind > N - 1)
 			stencil_values[j] = U_c[ind_new - N];
 		else
 			stencil_values[j] = U_c[ind_new];
@@ -76,7 +98,7 @@ void fillStencilValues(int ind) {
 void debugPrint(void) {
 	unsigned int ind;
 	for (ind = 0; ind < N; ind++)
-#define eps 0.1
+#define eps 0.01
 		if (U_c[ind] < eps)
 			printf("_");
 		else
