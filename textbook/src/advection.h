@@ -1,4 +1,5 @@
 void initialize(void);
 void singleStep(void);
-double interpolatedValue(double u_0, double u_1);
+double interpolatedValue(double *u);
+void fillStencilValues(int ind);
 void debugPrint(void);

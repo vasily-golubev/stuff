@@ -12,7 +12,8 @@
 // TODO Implement clear logic for stencil.
 #define S 1
 // TODO Fill this pattern and interpolate with it.
-double stencil[S + 1];
+int stencil[S + 1] = {-1, 0};
+double stencil_values[S + 1];
 
 double U_c[N], U_n[N];
 
@@ -39,13 +40,10 @@ void initialize(void) {
 }
 
 void singleStep(void) {
-	int ind, ind_0, ind_1;
+	int ind;
 	for (ind = 0; ind < N; ind++) {
-		ind_0 = ind;
-		ind_1 = ind - S;
-		if (ind_1 < 0)
-			ind_1 += N; 
-		U_n[ind] = interpolatedValue(U_c[ind_0], U_c[ind_1]);
+		fillStencilValues(ind);
+		U_n[ind] = interpolatedValue(stencil_values);
 	}
 	// FIXME For simplisity copy U_c = U_n
 	for (ind = 0; ind < N; ind++)
@@ -53,12 +51,26 @@ void singleStep(void) {
 }
 
 // FIXME The difference is only in this function + stencil (borders for for).
-double interpolatedValue(double u_0, double u_1) {
+double interpolatedValue(double *u) {
 	// Linear interpolation: y = a * x + b
-	double a = (u_0 - u_1) / h;
-	double b = u_0;
+	double a = (u[1] - u[0]) / h;
+	double b = u[0];
 	double val = a * (-l * tau) + b;
 	return val;
+}
+
+void fillStencilValues(int ind) {
+	unsigned int j;
+	int ind_new;
+	for (j = 0; j < S; j++) {
+		ind_new = ind + stencil[j];
+		if (ind_new < 0)
+			stencil_values[j] = U_c[ind_new + N];
+		else if (ind >= N)
+			stencil_values[j] = U_c[ind_new - N];
+		else
+			stencil_values[j] = U_c[ind_new];
+	}
 }
 
 void debugPrint(void) {
