@@ -47,6 +47,7 @@ int main() {
 		singleStep();
 	}
 	debugPrint();
+	debugGnuplot();
 	return 0;
 }
 
@@ -108,6 +109,7 @@ double interpolatedValue(double *u) {
 }
 #endif
 #ifdef FOURTH_ORDER
+// FIXME Strange value 40!
 double interpolatedValue(double *u) {
 	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
 	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
@@ -143,4 +145,13 @@ void debugPrint(void) {
 		else
 			printf("|");
 	printf("\n");
+}
+
+void debugGnuplot(void) {
+	FILE *pFile;
+	pFile = fopen("plot.dat", "w");
+	unsigned int ind;
+	for (ind = 0; ind < N; ind ++)
+		fprintf(pFile, "%f\t%f\n", -1.0 + h * ind, U_c[ind]);
+	fclose(pFile);
 }
