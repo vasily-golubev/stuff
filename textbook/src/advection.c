@@ -7,7 +7,7 @@
 #define k 0.4
 #define h (2.0 / N)
 #define tau (k * h / l)
-#define M (2.0 / l / tau)
+#define M (2.0 / h / k)
 
 // TODO Fill this pattern and interpolate with it.
 
@@ -23,16 +23,30 @@ double stencil_values[S + 1];
 int stencil[S + 1] = {-1, 0, 1};
 double stencil_values[S + 1];
 #endif
+// 3rd order.
+#ifdef THIRD_ORDER
+#define S 3
+int stencil[S + 1] = {-2, -1, 0, 1};
+double stencil_values[S + 1];
+#endif
+// 4th order.
+#ifdef FOURTH_ORDER
+#define S 4
+int stencil[S + 1] = {-2, -1, 0, 1, 2};
+double stencil_values[S + 1];
+#endif
 
 double U_c[N], U_n[N];
 
 int main() {
 	unsigned int step;
 	initialize();
+	debugPrint();
 	for (step = 0; step < M; step++) {
-		debugPrint();
+	//	debugPrint();
 		singleStep();
 	}
+	debugPrint();
 	return 0;
 }
 
@@ -41,7 +55,7 @@ void initialize(void) {
 	for (ind = 0; ind < N; ind++)
 		if ((ind >= N / 4) && (ind <= 3 * N / 4)) {
 			U_c[ind] = 1.0;
-			U_n[ind] = -.0;
+			U_n[ind] = 0.0;
 		} else {
 			U_c[ind] = 0.0;
 			U_n[ind] = 0.0;
@@ -64,7 +78,7 @@ void singleStep(void) {
 double interpolatedValue(double *u) {
 	// Linear interpolation: y = a * x + b
 	double a = (u[1] - u[0]) / h;
-	double b = u[0];
+	double b = u[1];
 	double x = -l * tau;
 	double val = a * x + b;
 	return val;
@@ -81,10 +95,35 @@ double interpolatedValue(double *u) {
 	return val;
 }
 #endif
+#ifdef THIRD_ORDER
+double interpolatedValue(double *u) {
+	// Qubic interpolation: y = a * x^3 + b * x^2 + c * x + d
+	double a = (u[3] + 3.0 * u[1] - 3.0 * u[2] - u[0]) / 6.0 / h / h / h;
+	double b = (u[3] - 2.0 * u[2] + u[1]) / 2.0 / h / h;
+	double c = (2.0 * u[3] + 3.0 * u[2] - 6.0 * u[1] + u[0]) / 6.0 / h;
+	double d = u[2];
+	double x = -l * tau;
+	double val = a * x * x * x + b * x * x + c * x + d;
+	return val;
+}
+#endif
+#ifdef FOURTH_ORDER
+double interpolatedValue(double *u) {
+	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
+	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
+	double b = (2.0 * u[1] - 2.0 * u[3] + u[4] - u[0]) / 12.0 / h / h / h;
+	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] + u[0]) / 24.0 / h / h;
+	double d = (8.0 * u[3] - 8.0 * u[1] - u[4] + u[0]) / 12.0 / h;
+	double e = u[2];
+	double x = -l * tau;
+	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
+	return val;
+}
+#endif
 void fillStencilValues(int ind) {
 	unsigned int j;
 	int ind_new;
-	for (j = 0; j < S; j++) {
+	for (j = 0; j < S + 1; j++) {
 		ind_new = ind + stencil[j];
 		if (ind_new < 0)
 			stencil_values[j] = U_c[ind_new + N];
@@ -98,8 +137,8 @@ void fillStencilValues(int ind) {
 void debugPrint(void) {
 	unsigned int ind;
 	for (ind = 0; ind < N; ind++)
-#define eps 0.01
-		if (U_c[ind] < eps)
+#define eps 0.1
+		if ((U_c[ind] < eps) && (U_c[ind] > -eps))
 			printf("_");
 		else
 			printf("|");
