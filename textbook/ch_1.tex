@@ -19,7 +19,7 @@
 Автором в общем виде излагается алгоритм, который может быть непосредственно реализован на языке Си.
 
 
-\subsection {Одномерное линейное уравнение переноса}
+\subsection*{Одномерное линейное уравнение переноса}
 
 Рассмотрим одномерное линейное уравнение переноса:
 \begin{equation}
@@ -45,12 +45,12 @@ u^{n+1}_m = u^n (x_m-\lambda\tau).
 Отметим, что все дальнейшие выкладки будут симметричны относительно замены $\lambda$ на $-\lambda$ и изменения шаблона на противоположный.
 Для наглядности в дальнейшем будем полагать $\lambda\geq0$.
 
-\subsection {Одномерные уравнения акустики}
+\subsection*{Одномерные уравнения газовой динамики}
 
 Рассмотрим задачу о распространении волн давления малой амплитуды в газе в одномерной постановке.
 Будем считать, что равновестное состояние характеризуется нулевой скоростью течения газа, плотностью $\rho_0$ и давлением $P(\rho_0)$.
 Неизвестными функциями являются давление $p(x, t)$ и скорость $u(x, t)$, как малые величины относительно равновесных значений.
-Если ввести обозначение $K_0=\rho_0 P'(\rho_0)$, то динамические процессы, происходящие в среде могут быть описаны линейной системой дифференциальных уравнений: 
+Если ввести обозначение $K_0=\rho_0 P'(\rho_0)$, то динамические процессы, происходящие в среде, могут быть описаны линейной системой дифференциальных уравнений: 
 \begin{equation}
 \label{eq_acoustic}
 \left[ \begin{array}{c} p \\ u \end{array} \right]_t
@@ -60,15 +60,33 @@ u^{n+1}_m = u^n (x_m-\lambda\tau).
 = 0.
 \end{equation}
 
-Обозначим $c_0=\sqrt{P'(\rho_0)}$, $Z_0=\rho_0c_0$ и введём в рассмотрение две новые неизвестные $w_1$ и $w_2$ согласно формуле:
+Собственные значения матрицы данной системы $\lambda_{1,2}=\pm c_0$, где $c_0=\sqrt{P'(\rho_0)}$.
+Матрица, составленная из собственных векторов, $S$ и обратная к ней $S^{-1}$ имеют вид соответственно
 \begin{equation}
-\label{eq_riman}
-\left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]
+\label{eq_acoustic_eigmat}
+S=\left[ \begin{array}{cc} -Z_0 & Z_0 \\ 1 & 1 \end{array} \right],
+S^{-1}=\frac{1}{2Z_0}\left[ \begin{array}{cc} -1 & Z_0 \\ 1 & Z_0 \end{array} \right],
+\end{equation}
+где $Z_0=\rho_0c_0$.
+
+Таким образом, уравнение \ref{eq_acoustic} может быть переписано в виде:
+\begin{equation}
+\label{eq_acoustic_simply}
+\left[ \begin{array}{c} p \\ u \end{array} \right]_t
++
+S\left[ \begin{array}{cc} -c_0 & 0 \\ 0 & c_0 \end{array} \right]S^{-1}
+\left[ \begin{array}{c} p \\ u \end{array} \right]_x
+= 0.
+\end{equation}
+
+Домножая обе части \ref{eq_acoustic_simply} на $S^{-1}$ слева и вводя замену переменных
+\begin{equation}
+\label{eq_acoustic_change}
+\left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]=S^{-1} \left[ \begin{array}{c} p \\ u \end{array} \right]
 =\frac{1}{2Z_0}
 \left[ \begin{array}{c} -p + Z_0u \\ p + Z_0u \end{array} \right].
 \end{equation}
-
-В таком случае система \ref{eq_acoustic} может быть записана в виде:
+получим следующую систему уравнений:
 \begin{equation}
 \label{eq_acoustic_rim}
 \left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]_t
@@ -78,7 +96,51 @@ u^{n+1}_m = u^n (x_m-\lambda\tau).
 = 0.
 \end{equation}
 
-Таким образом, для решения задачи о распространении волн малой амплитуды в газе достаточно решить два независимых уравнений переноса и перейти обратно к переменным $p$ и $u$.
+Таким образом, для решения задачи о распространении волн малой амплитуды в газе достаточно решить два независимых уравнения переноса и перейти обратно к переменным $p$ и $u$.
+
+\subsection*{Одномерные уравнения упругой среды}
+
+Рассмотрим задачу о распространении волн давления малой амплитуды в упругой среде в одномерной постановке.
+Аналогично случаю с распространением возмущений в газе неизвестные функции будут отсчитываться от равновесных значений.
+К ним относится напряжение $\sigma_{xx}(x, t)$ и скорость среды $u(x, t)$.
+Дополнительно введём обозначения: $\lambda$ и $\mu$ - упругие параметры Лямэ, $\rho$ - плотность среды.
+Динамические процессы, происходящие в среде, могут быть описаны линейной системой дифференциальных уравнений: 
+\begin{equation}
+\label{eq_elastic}
+\left[ \begin{array}{c} \sigma_{xx} \\ u \end{array} \right]_t
++
+\left[ \begin{array}{cc} 0 & -(\lambda + 2\mu) \\ -\frac{1}{\rho} & 0 \end{array} \right]
+\left[ \begin{array}{c} \sigma_{xx} \\ u \end{array} \right]_x
+= 0.
+\end{equation}
+
+Собственные значения матрицы данной системы $\lambda_{1,2}=\pm c_p$, где $c_p=\sqrt{\frac{\lambda+2\mu}{\rho}}$.
+Матрица, составленная из собственных векторов, $S$ и обратная к ней $S^{-1}$ имеют вид соответственно
+\begin{equation}
+\label{eq_acoustic_eigmat}
+S=\left[ \begin{array}{cc} Z & -Z \\ 1 & 1 \end{array} \right],
+S^{-1}=\frac{1}{2Z}\left[ \begin{array}{cc} 1 & Z \\ -1 & Z \end{array} \right],
+\end{equation}
+где $Z=\rho c_p$.
+
+Аналогично \ref{eq_acoustic_change} введением замены переменных
+\begin{equation}
+\label{eq_elastic_change}
+\left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]=S^{-1} \left[ \begin{array}{c} \sigma_{xx} \\ u \end{array} \right]
+=\frac{1}{2Z}
+\left[ \begin{array}{c} \sigma_{xx} + Zu \\ -\sigma_{xx} + Zu \end{array} \right].
+\end{equation}
+исходную систему уравнений \ref{eq_acoustic} можно преобразовать к виду:
+\begin{equation}
+\label{eq_elastic_rim}
+\left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]_t
++
+\left[ \begin{array}{cc} -c_p & 0 \\ 0 & c_p \end{array} \right]
+\left[ \begin{array}{c} w_1 \\ w_2 \end{array} \right]_x
+= 0.
+\end{equation}
+
+Таким образом, для решения задачи о распространении волн малой амплитуды в упругой среде достаточно решить два независимых уравнения переноса и перейти обратно к переменным $\sigma_{xx}$ и $u$.
 
 \section {Сеточные схемы на расширенном пространственном шаблоне}
 
