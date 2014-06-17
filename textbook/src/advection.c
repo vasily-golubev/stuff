@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "advection.h"
 
@@ -51,6 +52,8 @@ int main() {
 	return 0;
 }
 
+// Rect impulse as initial data.
+#ifdef ROUGH_INITIAL
 void initialize(void) {
 	unsigned int ind;
 	for (ind = 0; ind < N; ind++)
@@ -62,6 +65,19 @@ void initialize(void) {
 			U_n[ind] = 0.0;
 		}
 }
+#endif
+
+// sin^4(PI*x), [-1,1] as initial data.
+#ifdef SMOOTH_INITIAL
+void initialize(void) {
+	unsigned int ind;
+	for (ind = 0; ind < N; ind++) {
+		double x = -1.0 + ind * h;
+		U_c[ind] = pow(sin(M_PI * x), 4.0);
+		U_n[ind] = 0.0;
+	}
+}
+#endif
 
 void singleStep(void) {
 	int ind;
@@ -109,9 +125,10 @@ double interpolatedValue(double *u) {
 }
 #endif
 #ifdef FOURTH_ORDER
-// FIXME Strange value 40!
 double interpolatedValue(double *u) {
 	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
+	// FIXME Strange value 25!
+	/*
 	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
 	double b = (2.0 * u[1] - 2.0 * u[3] + u[4] - u[0]) / 12.0 / h / h / h;
 	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] + u[0]) / 24.0 / h / h;
@@ -120,6 +137,17 @@ double interpolatedValue(double *u) {
 	double x = -l * tau;
 	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
 	return val;
+	*/
+	// FIXME It is from RECT and look like correct!
+	///*
+	double c = l * tau / h;
+	double t1 = 1 / 24.0 * (-2.0 * u[4] + 16.0 * u[3] - 16.0 * u[1] + 2.0 * u[0]);
+	double t2 = 1 / 24.0 * (-u[4] + 16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[0]);
+	double t3 = 1 / 24.0 * (2.0 * u[4] - 4.0 * u[3] + 4.0 * u[1] - 2.0 * u[0]);
+	double t4 = 1 / 24.0 * (u[4] - 4.0 * u[3] + 6.0 * u[2] - 4.0 * u[1] + u[0]);
+	return u[2] - c * (t1 - c * (t2 - c * (t3 - c * t4)));
+	//*/
+
 }
 #endif
 void fillStencilValues(int ind) {
@@ -129,7 +157,7 @@ void fillStencilValues(int ind) {
 		ind_new = ind + stencil[j];
 		if (ind_new < 0)
 			stencil_values[j] = U_c[ind_new + N];
-		else if (ind > N - 1)
+		else if (ind_new > N - 1)
 			stencil_values[j] = U_c[ind_new - N];
 		else
 			stencil_values[j] = U_c[ind_new];
