@@ -30,12 +30,12 @@ double stencil_values[S + 1];
 int stencil[S + 1] = {-2, -1, 0, 1};
 double stencil_values[S + 1];
 #endif
-// 4th order.
-#ifdef FOURTH_ORDER
-#define S 4
-int stencil[S + 1] = {-2, -1, 0, 1, 2};
-double stencil_values[S + 1];
-#endif
+// FIXME Retest code and remnove - task for students. 4th order.
+//#ifdef FOURTH_ORDER
+//#define S 4
+//int stencil[S + 1] = {-2, -1, 0, 1, 2};
+//double stencil_values[S + 1];
+//#endif
 
 double U_c[N], U_n[N];
 
@@ -124,8 +124,9 @@ double interpolatedValue(double *u) {
 	return val;
 }
 #endif
-#ifdef FOURTH_ORDER
-double interpolatedValue(double *u) {
+// FIXME Retest code and remnove - task for students. 4th order.
+//#ifdef FOURTH_ORDER
+//double interpolatedValue(double *u) {
 	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
 	// FIXME Strange value 25!
 	/*
@@ -140,16 +141,15 @@ double interpolatedValue(double *u) {
 	*/
 	// FIXME It is from RECT and look like correct!
 	///*
-	double c = l * tau / h;
-	double t1 = 1 / 24.0 * (-2.0 * u[4] + 16.0 * u[3] - 16.0 * u[1] + 2.0 * u[0]);
-	double t2 = 1 / 24.0 * (-u[4] + 16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[0]);
-	double t3 = 1 / 24.0 * (2.0 * u[4] - 4.0 * u[3] + 4.0 * u[1] - 2.0 * u[0]);
-	double t4 = 1 / 24.0 * (u[4] - 4.0 * u[3] + 6.0 * u[2] - 4.0 * u[1] + u[0]);
-	return u[2] - c * (t1 - c * (t2 - c * (t3 - c * t4)));
+	//double c = l * tau / h;
+	//double t1 = 1 / 24.0 * (-2.0 * u[4] + 16.0 * u[3] - 16.0 * u[1] + 2.0 * u[0]);
+	//double t2 = 1 / 24.0 * (-u[4] + 16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[0]);
+	//double t3 = 1 / 24.0 * (2.0 * u[4] - 4.0 * u[3] + 4.0 * u[1] - 2.0 * u[0]);
+	//double t4 = 1 / 24.0 * (u[4] - 4.0 * u[3] + 6.0 * u[2] - 4.0 * u[1] + u[0]);
+	//return u[2] - c * (t1 - c * (t2 - c * (t3 - c * t4)));
 	//*/
-
-}
-#endif
+//}
+//#endif
 void fillStencilValues(int ind) {
 	unsigned int j;
 	int ind_new;
