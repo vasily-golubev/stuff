@@ -1,0 +1,9 @@
+This folder will contains scientific article about
+the process of generalization of CIP (BIS-1, BIS-2)
+schemes proposed by N. Khokhlov (2013) for 3D case.
+
+# Encoding:
+In vim type: ":e ++enc=cp866"
+
+# Compilation:
+pdflatex --shell-escape maiksamp.tex
