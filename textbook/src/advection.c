@@ -31,11 +31,11 @@ int stencil[S + 1] = {-2, -1, 0, 1};
 double stencil_values[S + 1];
 #endif
 // FIXME Retest code and remnove - task for students. 4th order.
-//#ifdef FOURTH_ORDER
-//#define S 4
-//int stencil[S + 1] = {-2, -1, 0, 1, 2};
-//double stencil_values[S + 1];
-//#endif
+#ifdef FOURTH_ORDER
+#define S 4
+int stencil[S + 1] = {-2, -1, 0, 1, 2};
+double stencil_values[S + 1];
+#endif
 
 double U_c[N], U_n[N];
 
@@ -125,20 +125,21 @@ double interpolatedValue(double *u) {
 }
 #endif
 // FIXME Retest code and remnove - task for students. 4th order.
-//#ifdef FOURTH_ORDER
-//double interpolatedValue(double *u) {
+#ifdef FOURTH_ORDER
+double interpolatedValue(double *u) {
 	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
 	// FIXME Strange value 25!
-	/*
+	
 	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
 	double b = (2.0 * u[1] - 2.0 * u[3] + u[4] - u[0]) / 12.0 / h / h / h;
-	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] + u[0]) / 24.0 / h / h;
+	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] - u[0]) / 24.0 / h / h;
 	double d = (8.0 * u[3] - 8.0 * u[1] - u[4] + u[0]) / 12.0 / h;
 	double e = u[2];
 	double x = -l * tau;
 	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
+	return u[2] - l*tau/12.0/h * (-u[4]+u[0]+8.0*u[3]-8.0*u[1]) + l*l*tau*tau/24.0/h/h*(16.0*u[1]+16.0*u[3]-u[0]-u[4]-30.0*u[2])-l*l*l*tau*tau*tau/12.0/h/h/h*(u[4]-u[0]-2.0*u[3]+2.0*u[1])+l*l*l*l*tau*tau*tau*tau/24.0/h/h/h/h*(6.0*u[2]+u[0]+u[4]-4.0*u[3]-4.0*u[1]);
 	return val;
-	*/
+	
 	// FIXME It is from RECT and look like correct!
 	///*
 	//double c = l * tau / h;
@@ -148,8 +149,16 @@ double interpolatedValue(double *u) {
 	//double t4 = 1 / 24.0 * (u[4] - 4.0 * u[3] + 6.0 * u[2] - 4.0 * u[1] + u[0]);
 	//return u[2] - c * (t1 - c * (t2 - c * (t3 - c * t4)));
 	//*/
-//}
-//#endif
+	/*double a = (6.0 * u[2] + u[4] + u[0] - 4.0 * u[3] - 4.0 * u[1]) / 24.0 / h / h / h / h;
+	double b = (u[4] - u[0] - 2.0 * u[3] + 2.0 * u[1]) / 12.0 / h / h / h;
+	double c = (16.0 * u[1] + 16.0 * u[3] - u[0] - u[4] - 30.0 * u[2]) / 24.0 / h / h;
+	double d = (-u[4] + u[0] + 8.0 * u[3] - 8.0 * u[1]) / 12.0 / h;
+	double e = u[2];
+	double x = -l * tau;
+	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
+	*/return val;
+}
+#endif
 void fillStencilValues(int ind) {
 	unsigned int j;
 	int ind_new;
