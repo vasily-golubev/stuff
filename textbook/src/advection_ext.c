@@ -16,14 +16,6 @@ int stencil[S + 1] = {-1, 0};
 double stencil_values[S + 1];
 double stencil_Dvalues[S + 1];
 #endif
-// FIXME Test and remove for students!
-// 5th order.
-#ifdef FIFTH_ORDER
-#define S 2
-int stencil[S + 1] = {-1, 0, 1};
-double stencil_values[S + 1];
-double stencil_Dvalues[S + 1];
-#endif
 
 int main() {
 	unsigned int step;
@@ -100,32 +92,6 @@ double interpolatedDValue(double *u, double *du) {
 	double c = du[1];
 	double x = -l * tau;
 	double val = 3.0 * a * x * x + 2.0 * b * x + c;
-	return val;
-}
-#endif
-// FIXME Rm me for students.
-#ifdef FIFTH_ORDER
-double interpolatedValue(double *u, double *du) {
-	// 5th order interpolation: y = a * x^5 + b * x^4 + c * x^3 + d * x^2 + e * x + f 
-	double a = -(3.0 * u[2] - 3.0 * u[0] - 4.0 * h * du[1] - h * du[2] - h * du[0]) / 4.0 / pow(h, 5.0);
-	double b = -(-4.0 * u[1] + 2.0 * u[2] + 2.0 * u[0] - h * du[2] + h * du[0]) / 4.0 / pow(h, 4.0);
-	double c = -(-5.0 * u[2] + 5.0 * u[0] + 8 * h * du[1] + h * du[2] + h * du[0]) / 4.0 / pow(h, 3.0);
-	double d = -(8.0 * u[1] - 4.0 * u[2] - 4.0 * u[0] + h * du[2] - h * du[0]) / 4.0 / pow(h, 2.0);
-	double e = du[1];
-	double f = u[1];
-	double x = -l * tau;
-	double val = a * x * x * x * x * x + b * x * x * x * x+ c * x * x * x + d * x * x + e * x + f;
-	return val;
-}
-double interpolatedDValue(double *u, double *du) {
-	// 5th order interpolation: dy = 5 * a * x^4 + 4 * b * x^3 + 3 * c * x^2 + 2 * d * x + e
-	double a = -(3.0 * u[2] - 3.0 * u[0] - 4.0 * h * du[1] - h * du[2] - h * du[0]) / 4.0 / pow(h, 5.0);
-	double b = -(-4.0 * u[1] + 2.0 * u[2] + 2.0 * u[0] - h * du[2] + h * du[0]) / 4.0 / pow(h, 4.0);
-	double c = -(-5.0 * u[2] + 5.0 * u[0] + 8 * h * du[1] + h * du[2] + h * du[0]) / 4.0 / pow(h, 3.0);
-	double d = -(8.0 * u[1] - 4.0 * u[2] - 4.0 * u[0] + h * du[2] - h * du[0]) / 4.0 / pow(h, 2.0);
-	double e = du[1];
-	double x = -l * tau;
-	double val = 5.0 * a * x * x * x * x + 4.0 * b * x * x * x + 3.0 * c * x * x + 2.0 * d * x + e;
 	return val;
 }
 #endif
