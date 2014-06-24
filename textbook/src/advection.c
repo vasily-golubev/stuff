@@ -32,12 +32,6 @@ double stencil_values[S + 1];
 int stencil[S + 1] = {-2, -1, 0, 1};
 double stencil_values[S + 1];
 #endif
-// FIXME Remove - task for students. 4th order.
-//#ifdef FOURTH_ORDER
-//#define S 4
-//int stencil[S + 1] = {-2, -1, 0, 1, 2};
-//double stencil_values[S + 1];
-//#endif
 
 int main() {
 	unsigned int step;
@@ -122,23 +116,6 @@ double interpolatedValue(double *u) {
 	double x = -l * tau;
 	double val = a * x * x * x + b * x * x + c * x + d;
 	return val;
-}
-#endif
-
-// FIXME Remove - task for students. 4th order.
-#ifdef FOURTH_ORDER
-double interpolatedValue(double *u) {
-	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
-	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
-	double b = (2.0 * u[1] - 2.0 * u[3] + u[4] - u[0]) / 12.0 / h / h / h;
-	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] - u[0]) / 24.0 / h / h;
-	double d = (8.0 * u[3] - 8.0 * u[1] - u[4] + u[0]) / 12.0 / h;
-	double e = u[2];
-	double x = -l * tau;
-	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
-	return val;
-	// FIXME Change in PhD!!!
-	//return u[2] - l*tau/12.0/h * (-u[4]+u[0]+8.0*u[3]-8.0*u[1]) + l*l*tau*tau/24.0/h/h*(16.0*u[1]+16.0*u[3]-u[0]-u[4]-30.0*u[2])-l*l*l*tau*tau*tau/12.0/h/h/h*(u[4]-u[0]-2.0*u[3]+2.0*u[1])+l*l*l*l*tau*tau*tau*tau/24.0/h/h/h/h*(6.0*u[2]+u[0]+u[4]-4.0*u[3]-4.0*u[1]);
 }
 #endif
 
