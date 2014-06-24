@@ -3,14 +3,16 @@
 
 #include "advection.h"
 
-#define N 100
 #define l 1.0
 #define k 0.4
 #define h (2.0 / N)
 #define tau (k * h / l)
 #define M (2.0 / h / k)
 
-// TODO Fill this pattern and interpolate with it.
+/*
+ * <stencil> contains numbers of nodes
+ * and <stencil_values> - values in this nodes.
+ */
 
 // 1st order.
 #ifdef FIRST_ORDER
@@ -30,23 +32,19 @@ double stencil_values[S + 1];
 int stencil[S + 1] = {-2, -1, 0, 1};
 double stencil_values[S + 1];
 #endif
-// FIXME Retest code and remnove - task for students. 4th order.
-#ifdef FOURTH_ORDER
-#define S 4
-int stencil[S + 1] = {-2, -1, 0, 1, 2};
-double stencil_values[S + 1];
-#endif
-
-double U_c[N], U_n[N];
+// FIXME Remove - task for students. 4th order.
+//#ifdef FOURTH_ORDER
+//#define S 4
+//int stencil[S + 1] = {-2, -1, 0, 1, 2};
+//double stencil_values[S + 1];
+//#endif
 
 int main() {
 	unsigned int step;
 	initialize();
 	debugPrint();
-	for (step = 0; step < M; step++) {
-	//	debugPrint();
+	for (step = 0; step < M; step++)
 		singleStep();
-	}
 	debugPrint();
 	debugGnuplot();
 	return 0;
@@ -71,8 +69,9 @@ void initialize(void) {
 #ifdef SMOOTH_INITIAL
 void initialize(void) {
 	unsigned int ind;
+	double x;
 	for (ind = 0; ind < N; ind++) {
-		double x = -1.0 + ind * h;
+		x = -1.0 + ind * h;
 		U_c[ind] = pow(sin(M_PI * x), 4.0);
 		U_n[ind] = 0.0;
 	}
@@ -85,12 +84,11 @@ void singleStep(void) {
 		fillStencilValues(ind);
 		U_n[ind] = interpolatedValue(stencil_values);
 	}
-	// FIXME For simplisity copy U_c = U_n
+	// FIXME For simplisity - copy U_c = U_n.
 	for (ind = 0; ind < N; ind++)
 		U_c[ind] = U_n[ind];
 }
 
-// FIXME The difference is only in this function + stencil (borders for for).
 #ifdef FIRST_ORDER
 double interpolatedValue(double *u) {
 	// Linear interpolation: y = a * x + b
@@ -101,6 +99,7 @@ double interpolatedValue(double *u) {
 	return val;
 }
 #endif
+
 #ifdef SECOND_ORDER
 double interpolatedValue(double *u) {
 	// Quadratic interpolation: y = a * x^2 + b * x + c
@@ -112,6 +111,7 @@ double interpolatedValue(double *u) {
 	return val;
 }
 #endif
+
 #ifdef THIRD_ORDER
 double interpolatedValue(double *u) {
 	// Qubic interpolation: y = a * x^3 + b * x^2 + c * x + d
@@ -124,12 +124,11 @@ double interpolatedValue(double *u) {
 	return val;
 }
 #endif
-// FIXME Retest code and remnove - task for students. 4th order.
+
+// FIXME Remove - task for students. 4th order.
 #ifdef FOURTH_ORDER
 double interpolatedValue(double *u) {
 	// 4th order interpolation: y = a * x^4 + b * x^3 + c * x^2 + d * x + e
-	// FIXME Strange value 25!
-	
 	double a = (6.0 * u[2] - 4.0 * u[3] - 4.0 * u[1] + u[4] + u[0]) / 24.0 / h / h / h / h;
 	double b = (2.0 * u[1] - 2.0 * u[3] + u[4] - u[0]) / 12.0 / h / h / h;
 	double c = (16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[4] - u[0]) / 24.0 / h / h;
@@ -137,28 +136,12 @@ double interpolatedValue(double *u) {
 	double e = u[2];
 	double x = -l * tau;
 	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
-	return u[2] - l*tau/12.0/h * (-u[4]+u[0]+8.0*u[3]-8.0*u[1]) + l*l*tau*tau/24.0/h/h*(16.0*u[1]+16.0*u[3]-u[0]-u[4]-30.0*u[2])-l*l*l*tau*tau*tau/12.0/h/h/h*(u[4]-u[0]-2.0*u[3]+2.0*u[1])+l*l*l*l*tau*tau*tau*tau/24.0/h/h/h/h*(6.0*u[2]+u[0]+u[4]-4.0*u[3]-4.0*u[1]);
 	return val;
-	
-	// FIXME It is from RECT and look like correct!
-	///*
-	//double c = l * tau / h;
-	//double t1 = 1 / 24.0 * (-2.0 * u[4] + 16.0 * u[3] - 16.0 * u[1] + 2.0 * u[0]);
-	//double t2 = 1 / 24.0 * (-u[4] + 16.0 * u[3] - 30.0 * u[2] + 16.0 * u[1] - u[0]);
-	//double t3 = 1 / 24.0 * (2.0 * u[4] - 4.0 * u[3] + 4.0 * u[1] - 2.0 * u[0]);
-	//double t4 = 1 / 24.0 * (u[4] - 4.0 * u[3] + 6.0 * u[2] - 4.0 * u[1] + u[0]);
-	//return u[2] - c * (t1 - c * (t2 - c * (t3 - c * t4)));
-	//*/
-	/*double a = (6.0 * u[2] + u[4] + u[0] - 4.0 * u[3] - 4.0 * u[1]) / 24.0 / h / h / h / h;
-	double b = (u[4] - u[0] - 2.0 * u[3] + 2.0 * u[1]) / 12.0 / h / h / h;
-	double c = (16.0 * u[1] + 16.0 * u[3] - u[0] - u[4] - 30.0 * u[2]) / 24.0 / h / h;
-	double d = (-u[4] + u[0] + 8.0 * u[3] - 8.0 * u[1]) / 12.0 / h;
-	double e = u[2];
-	double x = -l * tau;
-	double val = a * x * x * x * x + b * x * x * x + c * x * x + d * x + e;
-	*/return val;
+	// FIXME Change in PhD!!!
+	//return u[2] - l*tau/12.0/h * (-u[4]+u[0]+8.0*u[3]-8.0*u[1]) + l*l*tau*tau/24.0/h/h*(16.0*u[1]+16.0*u[3]-u[0]-u[4]-30.0*u[2])-l*l*l*tau*tau*tau/12.0/h/h/h*(u[4]-u[0]-2.0*u[3]+2.0*u[1])+l*l*l*l*tau*tau*tau*tau/24.0/h/h/h/h*(6.0*u[2]+u[0]+u[4]-4.0*u[3]-4.0*u[1]);
 }
 #endif
+
 void fillStencilValues(int ind) {
 	unsigned int j;
 	int ind_new;
