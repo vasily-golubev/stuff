@@ -3,14 +3,11 @@
 
 #include "advection_ext.h"
 
-#define N 100
 #define l 1.0
 #define k 0.4
 #define h (2.0 / N)
 #define tau (k * h / l)
 #define M (2.0 / h / k)
-
-// TODO Fill this pattern and interpolate with it.
 
 // 3rd order.
 #ifdef THIRD_ORDER
@@ -28,15 +25,11 @@ double stencil_values[S + 1];
 double stencil_Dvalues[S + 1];
 #endif
 
-double U_c[N], U_n[N];
-double dU_c[N], dU_n[N];
-
 int main() {
 	unsigned int step;
 	initialize();
 	debugPrint();
 	for (step = 0; step < M; step++) {
-	//	debugPrint();
 		singleStep();
 	}
 	debugPrint();
@@ -78,7 +71,7 @@ void singleStep(void) {
 	int ind;
 	for (ind = 0; ind < N; ind++) {
 		fillStencilValues(ind);
-		// FIXME Stupid 2 calculation of a_i.
+		// FIXME Remove calculating a_i twice.
 		U_n[ind] = interpolatedValue(stencil_values, stencil_Dvalues);
 		dU_n[ind] = interpolatedDValue(stencil_values, stencil_Dvalues);
 	}
@@ -89,7 +82,6 @@ void singleStep(void) {
 	}
 }
 
-// FIXME The difference is only in this function + stencil (borders for for).
 #ifdef THIRD_ORDER
 double interpolatedValue(double *u, double *du) {
 	// Cubic interpolation: y = a * x^3 + b * x^2 + c * x + d
@@ -171,7 +163,6 @@ void debugGnuplot(void) {
 	FILE *pFile;
 	pFile = fopen("plot.dat", "w");
 	unsigned int ind;
-	// FIXME Print dU too?
 	for (ind = 0; ind < N; ind ++)
 		fprintf(pFile, "%f\t%f\n", -1.0 + h * ind, U_c[ind]);
 	fclose(pFile);
