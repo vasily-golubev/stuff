@@ -106,7 +106,7 @@ centertags]%
 u_t + \lambda_x u_x + \lambda_y u_y + \lambda_z u_z = 0
 \end{equation}
 
-и трёхточечный по пространству шаблон (рис. \ref{img_stencil}) с пространственным шагом $h$ и временным шагом $\tau$:\begin{equation}
+и четырёхточечный по пространству шаблон (рис. \ref{img_stencil}) с пространственным шагом $h$ и временным шагом $\tau$:\begin{equation}
 \label{eq_stencil_4}
 (t^n, x_{i - 1}, y_j, z_k), (t^n, x_i, y_{j - 1}, z_k), (t^n, x_i, y_j, z_{k - 1}), (t^n, x_i, y_j, z_k), (t^{n + 1}, x_i, y_j, z_k).
 \end{equation}
@@ -243,14 +243,14 @@ CIP-2D-2, БИС1-2D-2 и БИС2-2D-2.
 \bibliography{ref}{}
 \bibliographystyle{ieeetr}
 
-%\begin{figure}[htb]
-%\setcaptionmargin{5mm}
-%\onelinecaptionstrue
-%\includegraphics{./images/fig1-crop.pdf}
-%\captionstyle{normal}
-%\caption{Шаблон разностной схемы}
-%\label{img_stencil}
-%\end{figure}
+\begin{figure}[htb]
+\setcaptionmargin{5mm}
+\onelinecaptionstrue
+\includegraphics{./images/fig1-crop.pdf}
+\captionstyle{normal}
+\caption{Шаблон разностной схемы}
+\label{img_stencil}
+\end{figure}
 
 
 %\begin{figure}[htb]
