@@ -1,0 +1,28 @@
+diff --git a/structured/src/gnuplotsaver.cpp b/structured/src/gnuplotsaver.cpp
+index df137fd..27ca2d2 100644
+--- a/structured/src/gnuplotsaver.cpp
++++ b/structured/src/gnuplotsaver.cpp
+@@ -211,7 +211,12 @@ void GnuplotSaver::saveGrid3D(RectGrid *g, const char *filename)
+ 	RECT_ASSERT(type == DATA_SCALAR, "GnuplotSaver::saveGrid3D: Invalid data type.");
+ 	
+ 	f << setprecision(numeric_limits<real>::digits10 + 1) << fixed;
+-	for (int_t k = g->localSize(Z) - 1; k >= 0; k -= 1) {
++	for (int_t i = 0; i < g->localSize(X); i += 1) {
++		int_t index = g->localIndex(i, i, i);
++		real *n = g->getNodeReal(index);
++		f << g->h.x * std::sqrt(3.0) * i << " " << (norm ? std::abs(n[ind]) : n[ind]) << "\n";
++	}
++	/*for (int_t k = g->localSize(Z) - 1; k >= 0; k -= 1) {
+ 	  for (int_t j = g->localSize(Y) - 1; j >= 0; j -= 1) {
+ 	    for (int_t i = 0; i < g->localSize(X); i += 1) {
+ 	      int_t index = g->localIndex(i, j, k);
+@@ -220,6 +225,6 @@ void GnuplotSaver::saveGrid3D(RectGrid *g, const char *filename)
+ 	    }
+ 	    f << "\n";
+ 	  }
+-	}
++	}*/
+ 	f.close();
+-}
+\ No newline at end of file
++}
