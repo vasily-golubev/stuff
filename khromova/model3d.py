@@ -14,8 +14,8 @@ y_min = 7623300
 y_max = 7626700
 
 # common stuff
-nx = 200
-ny = 200
+nx = 400
+ny = 400
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
 
@@ -32,7 +32,7 @@ for source in sources:
 	Y = data[:, 1]
 	print source # Progress ...
 	Z = -data[:, 2]
-	zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'cubic')
+	zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'linear')
 	h = zi
 
 	if source == 'Area_1_J2_1': # Day surface case
@@ -42,15 +42,15 @@ for source in sources:
 	NX = nx - 3
 	NY = ny - 3
 	if source == 'Area_1_P1S_III_9':
-		NZ = 40
+		NZ = 80
 	elif source == 'Area_1_Iu_P2_6' :
-		NZ = 60
+		NZ = 120
 	elif source == 'Area_1_J2_1':
-		NZ = 60
+		NZ = 120
 	elif source == 'Area_1_Aan_3':
-		NZ = 30
+		NZ = 60
 	elif source == 'Area_1_C2_10' or source == 'Area_1_Ahr_4' or source == 'Area_1_A3_2':
-		NZ = 10
+		NZ = 20
 	else:
 		print "O!"
 	coords = np.zeros((NX, NY, NZ), dtype = ('float64', 3))
