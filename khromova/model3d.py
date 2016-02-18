@@ -24,9 +24,9 @@ y_min = 7623700
 y_max = 7626700
 
 # common stuff
-nx = 60
-ny = 60
-nz = 30
+nx = 600
+ny = 600
+nz = 420
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
 
@@ -53,25 +53,34 @@ for source in sources:
 			h_prev = np.zeros(h.shape)
 			borders.append(h_prev)
 	if source == 'Bottom': # Bottom surface
-		h =  -2000.0 * np.ones(h.shape)
+		h =  -2100.0 * np.ones(h.shape)
 	borders.append(h)
 
 	# create mesh
 	NX = nx
 	NY = ny
-	NZ = 20
-	if source == 'Area_1_P1S_III_9':
-		NZ = 80
-	elif source == 'Area_1_Iu_P2_6' :
+	if source == 'Area_1_J2_1':
 		NZ = 120
-	elif source == 'Area_1_J2_1':
-		NZ = 120
+	elif source == 'Area_1_A3_2':
+		NZ = 20
 	elif source == 'Area_1_Aan_3':
 		NZ = 60
-	elif source == 'Area_1_C2_10' or source == 'Area_1_Ahr_4' or source == 'Area_1_A3_2':
+	elif source == 'Area_1_Ahr_4':
 		NZ = 20
+	elif source == 'Area_1_Acb_5':
+		NZ = 20
+	elif source == 'Area_1_Iu_P2_6':
+		NZ = 50
+	elif source == 'Area_1_P1AR_I_7':
+		NZ = 35
+	elif source == 'Area_1_P1S_III_9':
+		NZ = 10
+	elif source == 'Area_1_C2_10':
+		NZ = 20
+	elif source == 'Bottom':
+		NZ = 65
 	else:
-		print "O!"
+		print "INCORRECT LAYER NAME!"
 	coords = np.zeros((NX, NY, NZ), dtype = ('float64', 3))
 	for i in range(NX):
 		for j in range(NY):
@@ -103,13 +112,14 @@ for source in sources:
 
 # geometry.txt generation
 ff = open("./geometry.txt", "w")
+ff.write(str(nx) + " " + str(ny) + " " + str(nz) + "\n")
 for k in range(nz):
-        z = -2000.0 + 1.0 * k / (nz - 1) * (0.0 - (-2000.0))
-        for j in range(ny):
-                for i in range(nz):
-                        q = 0
-                        while (borders[q + 1][i][j] > z):
-                                q += 1
+	z = -2100.0 + 1.0 * k / (nz - 1) * (0.0 - (-2100.0))
+	for j in range(ny):
+		for i in range(nx):
+			q = 0
+			while (borders[q + 1][i][j] > z):
+				q += 1
 			ff.write("%s\n" % q)
 ff.close()
 sys.exit(0)
