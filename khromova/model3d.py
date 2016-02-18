@@ -6,37 +6,54 @@ import scipy.interpolate as sc_ip
 import struct
 
 # constants
-sources = ['Area_1_J2_1', 'Area_1_A3_2', 'Area_1_Aan_3', 'Area_1_Ahr_4', 'Area_1_Iu_P2_6', 'Area_1_P1AR_I_7', 'Area_1_P1AR_II_8', 'Area_1_P1S_III_9', 'Area_1_C2_10', 'Area_1_Acb_5']
+sources = ['Area_1_J2_1',
+	'Area_1_A3_2',
+	'Area_1_Aan_3',
+	'Area_1_Ahr_4',
+	'Area_1_Acb_5',
+	'Area_1_Iu_P2_6',
+	'Area_1_P1AR_I_7',
+	'Area_1_P1AR_II_8',
+	'Area_1_P1S_III_9',
+	'Area_1_C2_10']
 #! manual calculation
-x_min = 554400
+x_min = 555000
 x_max = 558000
-y_min = 7623300
+y_min = 7623700
 y_max = 7626700
 
 # common stuff
-nx = 400
-ny = 400
+nx = 30
+ny = 30
+nz = 30
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
 
 # old profile for mesh generation
 h_prev = []
 
+# grids for geometry.txt
+borders = []
+
 for source in sources:
-	if source == 'Area_1_Acb_5': # Can't interpolate 100 x 100
-		continue
-	if source == 'Area_1_P1AR_I_7' or source == 'Area_1_P1AR_II_8': # A first approach - skip
+	#if source == 'Area_1_Acb_5': # Can't interpolate 100 x 100
+	#	continue
+	if source == 'Area_1_P1AR_II_8': # A first approach - skip
 		continue
 	data = np.genfromtxt('./data/' + source + '.dat')
 	X = data[:, 0]
 	Y = data[:, 1]
 	print source # Progress ...
 	Z = -data[:, 2]
-	zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'linear')
+	zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'nearest')
 	h = zi
 
 	if source == 'Area_1_J2_1': # Day surface case
 		h_prev = np.zeros(h.shape)
+	if source == 'Area_1_C2_10': # Bottom surface
+		h_prev = h
+		h =  -2000.0 * np.ones(h.shape)
+	borders.append(h)
 
 	# create mesh
 	NX = nx - 3
@@ -81,5 +98,17 @@ for source in sources:
 	f.close()
 
 	h_prev = h
-
+# geometry txt generation
+ff = open("./geometry.txt", "w")
+print borders[8]
+for k in range(nz):
+        z = -2000.0 + 1.0 * k / (nz - 1) * (0.0 - (-2000.0))
+        for j in range(ny):
+                for i in range(nz):
+                        q = 0
+                        while (borders[q + 1][i][j] > z):
+				print z, borders[q+1][i][j]
+                                q += 1
+			ff.write("%s\n" % q)
+ff.close()
 sys.exit(0)
