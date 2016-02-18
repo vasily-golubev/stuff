@@ -15,7 +15,8 @@ sources = ['Area_1_J2_1',
 	'Area_1_P1AR_I_7',
 	'Area_1_P1AR_II_8',
 	'Area_1_P1S_III_9',
-	'Area_1_C2_10']
+	'Area_1_C2_10',
+	'Bottom']
 #! manual calculation
 x_min = 555000
 x_max = 558000
@@ -23,8 +24,8 @@ y_min = 7623700
 y_max = 7626700
 
 # common stuff
-nx = 30
-ny = 30
+nx = 60
+ny = 60
 nz = 30
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
@@ -36,28 +37,29 @@ h_prev = []
 borders = []
 
 for source in sources:
-	#if source == 'Area_1_Acb_5': # Can't interpolate 100 x 100
-	#	continue
 	if source == 'Area_1_P1AR_II_8': # A first approach - skip
 		continue
-	data = np.genfromtxt('./data/' + source + '.dat')
-	X = data[:, 0]
-	Y = data[:, 1]
-	print source # Progress ...
-	Z = -data[:, 2]
-	zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'nearest')
-	h = zi
+	if source != 'Bottom':
+		data = np.genfromtxt('./data/' + source + '.dat')
+		X = data[:, 0]
+		Y = data[:, 1]
+		print source # Progress ...
+		Z = -data[:, 2]
+		zi = sc_ip.griddata((X, Y), Z, (xi[None, :], yi[:, None]), method = 'nearest')
+		print "Interpolated" # Progress ...
+		h = zi
 
-	if source == 'Area_1_J2_1': # Day surface case
-		h_prev = np.zeros(h.shape)
-	if source == 'Area_1_C2_10': # Bottom surface
-		h_prev = h
+		if source == 'Area_1_J2_1': # Day surface case
+			h_prev = np.zeros(h.shape)
+			borders.append(h_prev)
+	if source == 'Bottom': # Bottom surface
 		h =  -2000.0 * np.ones(h.shape)
 	borders.append(h)
 
 	# create mesh
-	NX = nx - 3
-	NY = ny - 3
+	NX = nx
+	NY = ny
+	NZ = 20
 	if source == 'Area_1_P1S_III_9':
 		NZ = 80
 	elif source == 'Area_1_Iu_P2_6' :
@@ -98,16 +100,15 @@ for source in sources:
 	f.close()
 
 	h_prev = h
-# geometry txt generation
+
+# geometry.txt generation
 ff = open("./geometry.txt", "w")
-print borders[8]
 for k in range(nz):
         z = -2000.0 + 1.0 * k / (nz - 1) * (0.0 - (-2000.0))
         for j in range(ny):
                 for i in range(nz):
                         q = 0
                         while (borders[q + 1][i][j] > z):
-				print z, borders[q+1][i][j]
                                 q += 1
 			ff.write("%s\n" % q)
 ff.close()
