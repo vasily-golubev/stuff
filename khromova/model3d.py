@@ -37,6 +37,8 @@ h_prev = []
 borders = []
 
 for source in sources:
+	if source == 'Area_1_Acb_5' or source == 'Area_1_Iu_P2_6': # Inga told eliminate now
+		continue
 	if source == 'Area_1_P1AR_II_8': # A first approach - skip
 		continue
 	if source != 'Bottom':
@@ -67,12 +69,8 @@ for source in sources:
 		NZ = 60
 	elif source == 'Area_1_Ahr_4':
 		NZ = 20
-	elif source == 'Area_1_Acb_5':
-		NZ = 20
-	elif source == 'Area_1_Iu_P2_6':
-		NZ = 50
 	elif source == 'Area_1_P1AR_I_7':
-		NZ = 35
+		NZ = 105
 	elif source == 'Area_1_P1S_III_9':
 		NZ = 10
 	elif source == 'Area_1_C2_10':
@@ -110,6 +108,7 @@ for source in sources:
 
 	h_prev = h
 
+sys.exit(0)
 # geometry.txt generation
 ff = open("./geometry.txt", "w")
 ff.write(str(nx) + " " + str(ny) + " " + str(nz) + "\n")
