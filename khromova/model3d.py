@@ -24,9 +24,9 @@ y_min = 7623700
 y_max = 7626700
 
 # common stuff
-nx = 600
-ny = 600
-nz = 420
+nx = 601
+ny = 601
+nz = 421
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
 
@@ -70,7 +70,7 @@ for source in sources:
 	elif source == 'Area_1_Ahr_4':
 		NZ = 20
 	elif source == 'Area_1_P1AR_I_7':
-		NZ = 105
+		NZ = 106
 	elif source == 'Area_1_P1S_III_9':
 		NZ = 10
 	elif source == 'Area_1_C2_10':
