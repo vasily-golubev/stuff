@@ -108,7 +108,6 @@ for source in sources:
 
 	h_prev = h
 
-sys.exit(0)
 # geometry.txt generation
 ff = open("./geometry.txt", "w")
 ff.write(str(nx) + " " + str(ny) + " " + str(nz) + "\n")
