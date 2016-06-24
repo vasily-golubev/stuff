@@ -1,6 +1,7 @@
 #include <mpi.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -9,14 +10,20 @@
 #define MPI_TYPE_REAL MPI_FLOAT
 typedef float real_t;
 
-#define NX 1001
+//#define NX 1001
+#define NX 501
 #define NY 1
-#define NZ 2001
-#define NT 2001
+//#define NZ 251
+#define NZ 126
+//#define NT 2001
+#define NT 401
 #define dim 3
 #define comp 2
 
 using namespace std;
+
+int D;
+real_t h = 20.0f;
 
 string make_vtk_header(
 	const char *label,
@@ -57,17 +64,17 @@ float read_float(ifstream &i_stm) {
 }
 
 void read_data(real_t *input_data) {
-	ifstream file("./model0_full.bin");
+	ifstream file("./modelc_full_20_10.bin");
 	file.read((char *)input_data, dim * NX * NY * NT * sizeof(real_t));
 	file.close();
 }
 
 void save_input(real_t *input_data) {
-	ofstream file("./model0_full_input.vtk");
+	ofstream file("./modelc_full_input_20_10.vtk");
 	file << make_vtk_header(
 		"Created by Golubev",
 		NX, NY, NT,
-		1, 1, 1,
+		h, h, h,
 		0, 0, 0,
 		NX * NY * NT);
 	file << "SCALARS I float 1 \n";
@@ -81,21 +88,154 @@ void save_input(real_t *input_data) {
 }
 
 void save_model(real_t *data) {
-	ofstream file("./model0_full.vtk");
+	ofstream file("./modelc_full_20_10.vtk");
 	file << make_vtk_header(
 		"Created by Golubev",
-		NX, NY, NT,
-		1, 1, 1,
+		NX, NY, NZ,
+		h, h, h,
 		0, 0, 0,
-		NX * NY * NT);
+		NX * NY * NZ);
 	file << "SCALARS M float 1 \n";
 	file << "LOOKUP_TABLE M_table \n";
-	for (int i = 0; i < NT; i++)
-		for (int j = 0; j < NX; j++) {
-			int ind = j * NT + i;
-			write_float(file, data[ind]);
+	for (int k = 0; k < NZ; k++) {
+		for (int j = 0; j < NY; j++) {
+			for (int i = 0; i < NX; i++) {
+				int ind = i * NY * NZ + j * NZ + k;
+				write_float(file, data[ind]);
+			}
 		}
+	}
 	file.close();
+}
+
+void process_local_data(real_t *input_data, real_t *local_data, int rank) {
+	real_t tay = 0.01f;
+	real_t cP = 2500.0f / 2.0f;
+	real_t cS = 1250.0f / 2.0f;
+	real_t div0 = h / 2.0f;
+	int Kh = 1;
+
+	real_t M_Q[3][2];
+	real_t M_S[3][2];
+	real_t M_Rz3[3];
+	real_t M_Rxyz[2][2];
+	real_t M_Raab[3][2][3][3];
+
+	// FIXME Correct size for MPI processes!
+	real_t U1[NX][NY][NZ];
+	real_t U2[NX][NY][NZ];
+	real_t U3[NX][NY][NZ];
+	real_t U_norm[NX][NY][NZ];
+
+	for (int ind = 0; ind < D; ind++) {
+		if (ind % 100 == 0)
+			cout << ind << " from " << D << endl;
+		int index = rank * D + ind;
+		int I = index / (NY * NZ);
+		int J = (index - I * NY * NZ) / NZ;
+		int K = index - I * NY * NZ - J * NZ;
+
+		U1[I][J][K] = 0.0f;	
+		U2[I][J][K] = 0.0f;	
+		U3[I][J][K] = 0.0f;	
+
+		for (int i = 0; i < NX; i++) {
+			for (int j = 0; j < NY; j++) {
+				real_t M_X = I * h - i * h;
+				real_t M_Y = J * h - j * h;
+				real_t M_Z = K * h;
+				real_t M_r = sqrt(M_X * M_X + M_Y * M_Y + M_Z * M_Z);
+
+				if (M_r > div0) {
+					M_X = M_X / M_r;
+					M_Y = M_Y / M_r;
+					M_Z = M_Z / M_r;
+					for (int M_n = 0; M_n < 3; M_n++) {
+						for (int M_A = 0; M_A < 2; M_A++) {
+							real_t M_cA, M_cB, M_U;
+							if (M_A == 0)
+								M_cA = cP;
+							if (M_A == 1)
+								M_cA = cS;
+
+							if (M_n == 2)
+								M_cB = cP;
+							else
+								M_cB = cS;
+							int M_LrcA = (int)(M_r / (M_cA * tay));
+							M_S[M_n][M_A] = 0.0f;
+							if (M_LrcA < NT) {
+								if (M_n == 0)
+									M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+								if (M_n == 1)
+									M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+								if (M_n == 2)
+									M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+								M_S[M_n][M_A] = (M_cB / M_cA) * (M_cB / M_cA) * M_U;
+
+							}
+							M_Q[M_n][M_A] = 0.0f;
+							if (M_LrcA > NT)
+								M_LrcA = NT;
+							for (int l = 0; l <  M_LrcA; l++) {
+								if (M_n == 0)
+									M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + l];
+								if (M_n == 1)
+									M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + l];
+								if (M_n == 2)
+									M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + l];
+								M_Q[M_n][M_A] = M_Q[M_n][M_A] + M_U * l;
+							}
+							M_Q[M_n][M_A] = M_Q[M_n][M_A] * (M_cB * tay / M_r) * (M_cB * tay / M_r);
+
+							for (int M_a2 = 0; M_a2 < 3; M_a2++) {
+								for (int M_b = 0; M_b < 3; M_b++) {
+									int M_aCo, M_bCo;
+									if (M_a2 == M_b)
+										M_Raab[M_n][M_A][M_a2][M_b] = 0.0f;
+									else {
+										if (M_a2 == 0)
+											M_aCo = M_X;
+										if (M_a2 == 1)
+											M_aCo = M_Y;
+										if (M_a2 == 2)
+											M_aCo = M_Z;
+										if (M_b == 0)
+											M_bCo = M_X;
+										if (M_b == 1)
+											M_bCo = M_Y;
+										if (M_b == 2)
+											M_bCo = M_Z;
+										M_Raab[M_n][M_A][M_a2][M_b] = M_bCo * ( (3.0 - 7.0 * M_aCo * M_aCo) * M_Q[M_n][M_A] + (2.0 * M_aCo * M_aCo - 1.0) * M_S[M_n][M_A]);
+									}
+								}
+							}
+						}
+						int M_A;
+						if (M_n == 2)
+							M_A = 0;
+						else
+							M_A = 1;
+						M_Rz3[M_n] = 3.0 * M_Z * ( (3.0 - 5.0 * M_Z * M_Z) * M_Q[M_n][M_A] + (2.0 * M_Z * M_Z - 1.0) * M_S[M_n][M_A]);
+					}
+
+					for (int M_n = 0; M_n < 2; M_n++) {
+						for (int M_A = 0; M_A < 2; M_A++) {
+							M_Rxyz[M_n][M_A] = 0.0 - M_X * M_Y * M_Z * M_Q[M_n][M_A];
+						}
+					}
+
+					U1[I][J][K] = U1[I][J][K] + (0.0 - M_Raab[0][0][0][2] - M_Raab[0][1][1][2] - M_Rz3[0] - M_Rxyz[1][0] + M_Rxyz[1][1] - M_Raab[2][0][2][0] + M_Raab[2][1][2][0]) * (h / M_r) * (h / M_r);
+					U2[I][J][K] = U2[I][J][K] + (0.0 - M_Raab[1][0][1][2] - M_Raab[1][1][0][2] - M_Rz3[1] - M_Rxyz[0][0] + M_Rxyz[0][1] - M_Raab[2][0][2][1] + M_Raab[2][1][2][1]) * (h / M_r) * (h / M_r);
+					U3[I][J][K] = U3[I][J][K] + (0.0 - M_Rz3[2] - M_Raab[2][1][0][2] - M_Raab[2][1][1][2] - M_Raab[0][0][2][0] + M_Raab[0][1][2][0] - M_Raab[1][0][2][1] + M_Raab[1][1][2][1]) * (h / M_r) * ( h / M_r);
+
+				}
+			}
+		}
+		U_norm[I][J][K] = sqrt(U1[I][J][K] * U1[I][J][K] + U2[I][J][K] * U2[I][J][K] + U3[I][J][K] * U3[I][J][K]);
+		// TODO Prepare for sending result.
+		local_data[ind] = U_norm[I][J][K];
+	}
 }
 
 int main(int argc, char *argv[]) {
@@ -108,7 +248,7 @@ int main(int argc, char *argv[]) {
 	MPI_Comm_size(MPI_COMM_WORLD, &size);
 	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 	// FIXME Calculate local length D. Now think (NX * NY * NZ) % size == 0.
-	int D = (NX * NY * NZ) / size;
+	D = (NX * NY * NZ) / size;
 	if (rank == 0)
 		cout << "D = " << D << endl;
 	// Read input data.
@@ -119,11 +259,7 @@ int main(int argc, char *argv[]) {
 	MPI_Bcast(input_data, dim * NX * NY * NT, MPI_TYPE_REAL, 0, MPI_COMM_WORLD);
 	// Fill local data.
 	local_data = (real_t *)malloc(D * sizeof(real_t));
-	for (int i = 0; i < D; i++) {
-		// ind = comp * (NX * NT) + x * NT + t
-		int ind = comp * (NX * NT) + rank * D + i;
-		local_data[i] = input_data[ind];
-	}
+	process_local_data(input_data, local_data, rank);
 	// Allocate storage at MASTER.
 	if (rank == 0)
 		data = (real_t *)malloc(NX * NY * NZ * sizeof(real_t));
