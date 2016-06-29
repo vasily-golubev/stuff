@@ -18,7 +18,7 @@ typedef float real_t;
 // 2D parameters
 #define NX 501
 #define NY 1
-#define NZ 1
+#define NZ 51
 #define NT 401
 
 // 3D parameters
@@ -134,6 +134,8 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 	real_t M_Rz3[3];
 	real_t M_Rxyz[2][2];
 	real_t M_Raab[3][2][3][3];
+	real_t M_X, M_Y, M_Z, M_r;
+	int M_LrcA, M_aCo, M_bCo, M_A_new; // FIXME Strange M_A, M_A duplication (see M_A_new!)
 
 	// FIXME Correct size for MPI processes
 	real_t *U1 = (real_t *)malloc(D * sizeof(real_t));
@@ -160,10 +162,10 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 
 		for (int i = 0; i < NX; i++) {
 			for (int j = 0; j < NY; j++) {
-				real_t M_X = I * h - i * h;
-				real_t M_Y = J * h - j * h;
-				real_t M_Z = K * h;
-				real_t M_r = sqrt(M_X * M_X + M_Y * M_Y + M_Z * M_Z);
+				M_X = I * h - i * h;
+				M_Y = J * h - j * h;
+				M_Z = K * h;
+				M_r = sqrt(M_X * M_X + M_Y * M_Y + M_Z * M_Z);
 
 				if (M_r > div0) {
 					M_X = M_X / M_r;
@@ -172,24 +174,39 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 					for (int M_n = 0; M_n < 3; M_n++) {
 						for (int M_A = 0; M_A < 2; M_A++) {
 							real_t M_cA, M_cB, M_U;
-							if (M_A == 0)
-								M_cA = cP;
-							if (M_A == 1)
-								M_cA = cS;
+							switch ( M_A ) {
+								case 0:
+									M_cA = cP;
+									break;
+								case 1:
+									M_cA = cS;
+									break;
+								default:
+									cout << "ERROR IN PROCESSING" << endl;
+									exit(EXIT_FAILURE);
+							}
 
 							if (M_n == 2)
 								M_cB = cP;
 							else
 								M_cB = cS;
-							int M_LrcA = (int)(M_r / (M_cA * tay));
+							M_LrcA = (int)(M_r / (M_cA * tay));
 							M_S[M_n][M_A] = 0.0f;
 							if (M_LrcA < NT) {
-								if (M_n == 0)
-									M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
-								if (M_n == 1)
-									M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
-								if (M_n == 2)
-									M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+								switch ( M_n ) {
+									case 0:
+										M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+										break;
+									case 1:
+										M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+										break;
+									case 2:
+										M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + M_LrcA];
+										break;
+									default:
+										cout << "ERROR IN PROCESSING" << endl;
+										exit(EXIT_FAILURE);
+								}
 								M_S[M_n][M_A] = (M_cB / M_cA) * (M_cB / M_cA) * M_U;
 
 							}
@@ -197,63 +214,83 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 							if (M_LrcA > NT)
 								M_LrcA = NT;
 							for (int l = 0; l <  M_LrcA; l++) {
-								if (M_n == 0)
-									M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + l];
-								if (M_n == 1)
-									M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + l];
-								if (M_n == 2)
-									M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + l];
+								switch ( M_n ) {
+									case 0:
+										M_U = input_data[0 * (NX * NY * NT) + i * Kh * NT + l];
+										break;
+									case 1:
+										M_U = input_data[1 * (NX * NY * NT) + i * Kh * NT + l];
+										break;
+									case 2:
+										M_U = input_data[2 * (NX * NY * NT) + i * Kh * NT + l];
+										break;
+									default:
+										cout << "ERROR IN PROCESSING" << endl;
+										exit(EXIT_FAILURE);
+								}
 								M_Q[M_n][M_A] = M_Q[M_n][M_A] + M_U * l;
 							}
 							M_Q[M_n][M_A] = M_Q[M_n][M_A] * (M_cB * tay / M_r) * (M_cB * tay / M_r);
 
 							for (int M_a2 = 0; M_a2 < 3; M_a2++) {
 								for (int M_b = 0; M_b < 3; M_b++) {
-									int M_aCo, M_bCo;
 									if (M_a2 == M_b)
 										M_Raab[M_n][M_A][M_a2][M_b] = 0.0f;
 									else {
-										if (M_a2 == 0)
-											M_aCo = M_X;
-										if (M_a2 == 1)
-											M_aCo = M_Y;
-										if (M_a2 == 2)
-											M_aCo = M_Z;
-										if (M_b == 0)
-											M_bCo = M_X;
-										if (M_b == 1)
-											M_bCo = M_Y;
-										if (M_b == 2)
-											M_bCo = M_Z;
+										switch ( M_a2 ) {
+											case 0:
+												M_aCo = M_X;
+												break;
+											case 1:
+												M_aCo = M_Y;
+												break;
+											case 2:
+												M_aCo = M_Z;
+												break;
+											default:
+												cout << "ERROR IN PROCESSING" << endl;
+												exit(EXIT_FAILURE);
+										}
+
+										switch ( M_b ) {
+											case 0:
+												M_bCo = M_X;
+												break;
+											case 1:
+												M_bCo = M_Y;
+												break;
+											case 2:
+												M_bCo = M_Z;
+												break;
+										}
 										M_Raab[M_n][M_A][M_a2][M_b] = M_bCo * ( (3.0 - 7.0 * M_aCo * M_aCo) * M_Q[M_n][M_A] + (2.0 * M_aCo * M_aCo - 1.0) * M_S[M_n][M_A]);
 									}
 								}
 							}
 						}
-						int M_A;
+
 						if (M_n == 2)
-							M_A = 0;
+							M_A_new = 0;
 						else
-							M_A = 1;
-						M_Rz3[M_n] = 3.0 * M_Z * ( (3.0 - 5.0 * M_Z * M_Z) * M_Q[M_n][M_A] + (2.0 * M_Z * M_Z - 1.0) * M_S[M_n][M_A]);
+							M_A_new = 1;
+						M_Rz3[M_n] = 3.0 * M_Z * ( (3.0 - 5.0 * M_Z * M_Z) * M_Q[M_n][M_A_new] + (2.0 * M_Z * M_Z - 1.0) * M_S[M_n][M_A_new]);
 					}
 
-					for (int M_n = 0; M_n < 2; M_n++) {
-						for (int M_A = 0; M_A < 2; M_A++) {
+					for (int M_n = 0; M_n < 2; M_n++)
+						for (int M_A = 0; M_A < 2; M_A++)
 							M_Rxyz[M_n][M_A] = 0.0 - M_X * M_Y * M_Z * M_Q[M_n][M_A];
-						}
-					}
 
-					U1[ind] = U1[ind] + (0.0 - M_Raab[0][0][0][2] - M_Raab[0][1][1][2] - M_Rz3[0] - M_Rxyz[1][0] + M_Rxyz[1][1] - M_Raab[2][0][2][0] + M_Raab[2][1][2][0]) * (h / M_r) * (h / M_r);
-					U2[ind] = U2[ind] + (0.0 - M_Raab[1][0][1][2] - M_Raab[1][1][0][2] - M_Rz3[1] - M_Rxyz[0][0] + M_Rxyz[0][1] - M_Raab[2][0][2][1] + M_Raab[2][1][2][1]) * (h / M_r) * (h / M_r);
-					U3[ind] = U3[ind] + (0.0 - M_Rz3[2] - M_Raab[2][1][0][2] - M_Raab[2][1][1][2] - M_Raab[0][0][2][0] + M_Raab[0][1][2][0] - M_Raab[1][0][2][1] + M_Raab[1][1][2][1]) * (h / M_r) * ( h / M_r);
+					U1[ind] += (- M_Raab[0][0][0][2] - M_Raab[0][1][1][2] - M_Rz3[0] - M_Rxyz[1][0] + M_Rxyz[1][1] - M_Raab[2][0][2][0] + M_Raab[2][1][2][0]) * (h / M_r) * (h / M_r);
+					U2[ind] += (- M_Raab[1][0][1][2] - M_Raab[1][1][0][2] - M_Rz3[1] - M_Rxyz[0][0] + M_Rxyz[0][1] - M_Raab[2][0][2][1] + M_Raab[2][1][2][1]) * (h / M_r) * (h / M_r);
+					U3[ind] += (- M_Rz3[2] - M_Raab[2][1][0][2] - M_Raab[2][1][1][2] - M_Raab[0][0][2][0] + M_Raab[0][1][2][0] - M_Raab[1][0][2][1] + M_Raab[1][1][2][1]) * (h / M_r) * ( h / M_r);
 
 				}
 			}
 		}
-		U_norm[ind] = sqrt(U1[ind] * U1[ind] + U2[ind] * U2[ind] + U3[ind] * U3[ind]);
-		// TODO Prepare for sending result
-		local_data[ind] = U_norm[ind];
+		// FIXME Prepare for sending result
+		//U_norm[ind] = sqrt(U1[ind] * U1[ind] + U2[ind] * U2[ind] + U3[ind] * U3[ind]);
+		//local_data[ind] = U_norm[ind];
+		local_data[ind] = sqrt(U1[ind] * U1[ind] + U2[ind] * U2[ind] + U3[ind] * U3[ind]);
 	}
 	free(U1);
 	free(U2);
@@ -271,7 +308,8 @@ int main(int argc, char *argv[]) {
 	MPI_CHECK(MPI_Comm_rank(MPI_COMM_WORLD, &rank));
 	// FIXME Calculate local length D. Now think (NX * NY * NZ) % size == 0
 	if ( (NX * NY * NZ) % size != 0) {
-		cout << "Doesn't support non uniform task splitting" << endl;
+		if (rank == 0)
+			cout << "Doesn't support non uniform task splitting" << endl;
 		return EXIT_FAILURE;
 	}
 	D = (NX * NY * NZ) / size;
