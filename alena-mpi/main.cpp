@@ -10,20 +10,25 @@
 #define MPI_TYPE_REAL MPI_FLOAT
 typedef float real_t;
 
-//#define NX 1001
+// 2D parameters
 #define NX 501
 #define NY 1
-//#define NZ 251
-#define NZ 126
-//#define NT 2001
+#define NZ 51
 #define NT 401
+
+// 3D parameters
+//#define NX 201
+//#define NY 201
+//#define NZ 51
+//#define NT 2001
 #define dim 3
 #define comp 2
 
 using namespace std;
 
 int D;
-real_t h = 20.0f;
+real_t h = 20.0f; // 2D test
+//real_t h = 50.0f; // 3D test
 
 string make_vtk_header(
 	const char *label,
@@ -64,13 +69,15 @@ float read_float(ifstream &i_stm) {
 }
 
 void read_data(real_t *input_data) {
-	ifstream file("./modelc_full_20_10.bin");
+	//ifstream file("./modelc_3D_50_d.bin"); // 3D test
+	ifstream file("./modelc_full_20_10.bin"); // 2D test
 	file.read((char *)input_data, dim * NX * NY * NT * sizeof(real_t));
 	file.close();
 }
 
 void save_input(real_t *input_data) {
-	ofstream file("./modelc_full_input_20_10.vtk");
+	//ofstream file("./modelc_3D_50_d_input.vtk"); // 3D test
+	ofstream file("./modelc_full_20_10_input.vtk"); // 2D test
 	file << make_vtk_header(
 		"Created by Golubev",
 		NX, NY, NT,
@@ -88,7 +95,8 @@ void save_input(real_t *input_data) {
 }
 
 void save_model(real_t *data) {
-	ofstream file("./modelc_full_20_10.vtk");
+	//ofstream file("./modelc_3D_50_d.vtk"); // 3D test
+	ofstream file("./modelc_full_20_10.vtk"); // 2D test
 	file << make_vtk_header(
 		"Created by Golubev",
 		NX, NY, NZ,
@@ -109,7 +117,8 @@ void save_model(real_t *data) {
 }
 
 void process_local_data(real_t *input_data, real_t *local_data, int rank) {
-	real_t tay = 0.01f;
+	real_t tay = 0.01f; // 2D test
+	//real_t tay = 0.002f; // 3D test
 	real_t cP = 2500.0f / 2.0f;
 	real_t cS = 1250.0f / 2.0f;
 	real_t div0 = h / 2.0f;
@@ -122,22 +131,31 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 	real_t M_Raab[3][2][3][3];
 
 	// FIXME Correct size for MPI processes!
-	real_t U1[NX][NY][NZ];
-	real_t U2[NX][NY][NZ];
-	real_t U3[NX][NY][NZ];
-	real_t U_norm[NX][NY][NZ];
+	real_t *U1 = (real_t *)malloc(D * sizeof(real_t));
+	if (U1 == NULL)
+		cout << "Can't allocate memory" << endl;
+	real_t *U2 = (real_t *)malloc(D * sizeof(real_t));
+	if (U2 == NULL)
+		cout << "Can't allocate memory" << endl;
+	real_t *U3 = (real_t *)malloc(D * sizeof(real_t));
+	if (U3 == NULL)
+		cout << "Can't allocate memory" << endl;
+	real_t *U_norm = (real_t *)malloc(D * sizeof(real_t));
+	if (U_norm == NULL)
+		cout << "Can't allocate memory" << endl;
 
 	for (int ind = 0; ind < D; ind++) {
-		if (ind % 100 == 0)
-			cout << ind << " from " << D << endl;
+		if (rank == 0)
+			if (ind % 100 == 0)
+				cout << ind << " from " << D << endl;
 		int index = rank * D + ind;
 		int I = index / (NY * NZ);
 		int J = (index - I * NY * NZ) / NZ;
 		int K = index - I * NY * NZ - J * NZ;
 
-		U1[I][J][K] = 0.0f;	
-		U2[I][J][K] = 0.0f;	
-		U3[I][J][K] = 0.0f;	
+		U1[ind] = 0.0f;
+		U2[ind] = 0.0f;
+		U3[ind] = 0.0f;
 
 		for (int i = 0; i < NX; i++) {
 			for (int j = 0; j < NY; j++) {
@@ -225,17 +243,21 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 						}
 					}
 
-					U1[I][J][K] = U1[I][J][K] + (0.0 - M_Raab[0][0][0][2] - M_Raab[0][1][1][2] - M_Rz3[0] - M_Rxyz[1][0] + M_Rxyz[1][1] - M_Raab[2][0][2][0] + M_Raab[2][1][2][0]) * (h / M_r) * (h / M_r);
-					U2[I][J][K] = U2[I][J][K] + (0.0 - M_Raab[1][0][1][2] - M_Raab[1][1][0][2] - M_Rz3[1] - M_Rxyz[0][0] + M_Rxyz[0][1] - M_Raab[2][0][2][1] + M_Raab[2][1][2][1]) * (h / M_r) * (h / M_r);
-					U3[I][J][K] = U3[I][J][K] + (0.0 - M_Rz3[2] - M_Raab[2][1][0][2] - M_Raab[2][1][1][2] - M_Raab[0][0][2][0] + M_Raab[0][1][2][0] - M_Raab[1][0][2][1] + M_Raab[1][1][2][1]) * (h / M_r) * ( h / M_r);
+					U1[ind] = U1[ind] + (0.0 - M_Raab[0][0][0][2] - M_Raab[0][1][1][2] - M_Rz3[0] - M_Rxyz[1][0] + M_Rxyz[1][1] - M_Raab[2][0][2][0] + M_Raab[2][1][2][0]) * (h / M_r) * (h / M_r);
+					U2[ind] = U2[ind] + (0.0 - M_Raab[1][0][1][2] - M_Raab[1][1][0][2] - M_Rz3[1] - M_Rxyz[0][0] + M_Rxyz[0][1] - M_Raab[2][0][2][1] + M_Raab[2][1][2][1]) * (h / M_r) * (h / M_r);
+					U3[ind] = U3[ind] + (0.0 - M_Rz3[2] - M_Raab[2][1][0][2] - M_Raab[2][1][1][2] - M_Raab[0][0][2][0] + M_Raab[0][1][2][0] - M_Raab[1][0][2][1] + M_Raab[1][1][2][1]) * (h / M_r) * ( h / M_r);
 
 				}
 			}
 		}
-		U_norm[I][J][K] = sqrt(U1[I][J][K] * U1[I][J][K] + U2[I][J][K] * U2[I][J][K] + U3[I][J][K] * U3[I][J][K]);
+		U_norm[ind] = sqrt(U1[ind] * U1[ind] + U2[ind] * U2[ind] + U3[ind] * U3[ind]);
 		// TODO Prepare for sending result.
-		local_data[ind] = U_norm[I][J][K];
+		local_data[ind] = U_norm[ind];
 	}
+	free(U1);
+	free(U2);
+	free(U3);
+	free(U_norm);
 }
 
 int main(int argc, char *argv[]) {
@@ -253,22 +275,30 @@ int main(int argc, char *argv[]) {
 		cout << "D = " << D << endl;
 	// Read input data.
 	input_data = (real_t *)malloc(dim * NX * NY * NT * sizeof(real_t));
+	cout << "READING" << endl;
 	if (rank == 0)
 		read_data(input_data);
 	// Send input data to all processes.
 	MPI_Bcast(input_data, dim * NX * NY * NT, MPI_TYPE_REAL, 0, MPI_COMM_WORLD);
 	// Fill local data.
 	local_data = (real_t *)malloc(D * sizeof(real_t));
+	cout << "PROCESSING" << endl;
 	process_local_data(input_data, local_data, rank);
 	// Allocate storage at MASTER.
 	if (rank == 0)
 		data = (real_t *)malloc(NX * NY * NZ * sizeof(real_t));
 	// Send and receive.
+	cout << "SENDING" << endl;
 	MPI_Gather(local_data, D, MPI_TYPE_REAL, data, D, MPI_TYPE_REAL, 0, MPI_COMM_WORLD);
 	if (rank == 0) {
+		cout << "SAVING" << endl;
 		save_input(input_data);
 		save_model(data);
 	}
+	free(local_data);
+	free(input_data);
+	if (rank == 0)
+		free(data);
 	MPI_Finalize();
 	return 0;
 }
