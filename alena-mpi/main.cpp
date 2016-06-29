@@ -10,10 +10,15 @@
 #define MPI_TYPE_REAL MPI_FLOAT
 typedef float real_t;
 
+#define MPI_CHECK(x) \
+	{ if (x != MPI_SUCCESS) cout << "Error connected with MPI system" << endl; }
+#define MALLOC_CHECK(x) \
+	{ if (x == NULL) cout << "Error connected with malloc call" << endl; }
+
 // 2D parameters
 #define NX 501
 #define NY 1
-#define NZ 51
+#define NZ 1
 #define NT 401
 
 // 3D parameters
@@ -21,12 +26,12 @@ typedef float real_t;
 //#define NY 201
 //#define NZ 51
 //#define NT 2001
-#define dim 3
-#define comp 2
+#define dim 3 // 3D data collected (now true for 2D tests too)
+#define comp 2 // 0 = VX, 1 = VY, 2 = VZ
 
 using namespace std;
 
-int D;
+int D = 0;
 real_t h = 20.0f; // 2D test
 //real_t h = 50.0f; // 3D test
 
@@ -79,7 +84,7 @@ void save_input(real_t *input_data) {
 	//ofstream file("./modelc_3D_50_d_input.vtk"); // 3D test
 	ofstream file("./modelc_full_20_10_input.vtk"); // 2D test
 	file << make_vtk_header(
-		"Created by Golubev",
+		"Elastic Seismogram",
 		NX, NY, NT,
 		h, h, h,
 		0, 0, 0,
@@ -98,7 +103,7 @@ void save_model(real_t *data) {
 	//ofstream file("./modelc_3D_50_d.vtk"); // 3D test
 	ofstream file("./modelc_full_20_10.vtk"); // 2D test
 	file << make_vtk_header(
-		"Created by Golubev",
+		"Migration Image",
 		NX, NY, NZ,
 		h, h, h,
 		0, 0, 0,
@@ -130,19 +135,15 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 	real_t M_Rxyz[2][2];
 	real_t M_Raab[3][2][3][3];
 
-	// FIXME Correct size for MPI processes!
+	// FIXME Correct size for MPI processes
 	real_t *U1 = (real_t *)malloc(D * sizeof(real_t));
-	if (U1 == NULL)
-		cout << "Can't allocate memory" << endl;
+	MALLOC_CHECK(U1);
 	real_t *U2 = (real_t *)malloc(D * sizeof(real_t));
-	if (U2 == NULL)
-		cout << "Can't allocate memory" << endl;
+	MALLOC_CHECK(U2);
 	real_t *U3 = (real_t *)malloc(D * sizeof(real_t));
-	if (U3 == NULL)
-		cout << "Can't allocate memory" << endl;
+	MALLOC_CHECK(U3);
 	real_t *U_norm = (real_t *)malloc(D * sizeof(real_t));
-	if (U_norm == NULL)
-		cout << "Can't allocate memory" << endl;
+	MALLOC_CHECK(U_norm);
 
 	for (int ind = 0; ind < D; ind++) {
 		if (rank == 0)
@@ -251,7 +252,7 @@ void process_local_data(real_t *input_data, real_t *local_data, int rank) {
 			}
 		}
 		U_norm[ind] = sqrt(U1[ind] * U1[ind] + U2[ind] * U2[ind] + U3[ind] * U3[ind]);
-		// TODO Prepare for sending result.
+		// TODO Prepare for sending result
 		local_data[ind] = U_norm[ind];
 	}
 	free(U1);
@@ -265,40 +266,50 @@ int main(int argc, char *argv[]) {
 	real_t *local_data = NULL;
 	real_t *data = NULL;
 	real_t *input_data = NULL;
-	// FIXME Add error checking everywhere.
-	MPI_Init(&argc, &argv);
-	MPI_Comm_size(MPI_COMM_WORLD, &size);
-	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-	// FIXME Calculate local length D. Now think (NX * NY * NZ) % size == 0.
+	MPI_CHECK(MPI_Init(&argc, &argv));
+	MPI_CHECK(MPI_Comm_size(MPI_COMM_WORLD, &size));
+	MPI_CHECK(MPI_Comm_rank(MPI_COMM_WORLD, &rank));
+	// FIXME Calculate local length D. Now think (NX * NY * NZ) % size == 0
+	if ( (NX * NY * NZ) % size != 0) {
+		cout << "Doesn't support non uniform task splitting" << endl;
+		return EXIT_FAILURE;
+	}
 	D = (NX * NY * NZ) / size;
 	if (rank == 0)
-		cout << "D = " << D << endl;
-	// Read input data.
+		cout << "CHAIN (D) = " << D << ", THREADS = " << size << endl;
+	// Read input data
 	input_data = (real_t *)malloc(dim * NX * NY * NT * sizeof(real_t));
-	cout << "READING" << endl;
-	if (rank == 0)
+	MALLOC_CHECK(input_data);
+	if (rank == 0) {
+		cout << "READING" << endl;
 		read_data(input_data);
-	// Send input data to all processes.
-	MPI_Bcast(input_data, dim * NX * NY * NT, MPI_TYPE_REAL, 0, MPI_COMM_WORLD);
-	// Fill local data.
+	}
+	// Send input data to all processes
+	MPI_CHECK(MPI_Bcast(input_data, dim * NX * NY * NT, MPI_TYPE_REAL, 0, MPI_COMM_WORLD));
+	// Fill local data
 	local_data = (real_t *)malloc(D * sizeof(real_t));
-	cout << "PROCESSING" << endl;
-	process_local_data(input_data, local_data, rank);
-	// Allocate storage at MASTER.
 	if (rank == 0)
+		cout << "PROCESSING" << endl;
+	process_local_data(input_data, local_data, rank);
+	// Allocate storage at MASTER
+	if (rank == 0) {
 		data = (real_t *)malloc(NX * NY * NZ * sizeof(real_t));
-	// Send and receive.
-	cout << "SENDING" << endl;
-	MPI_Gather(local_data, D, MPI_TYPE_REAL, data, D, MPI_TYPE_REAL, 0, MPI_COMM_WORLD);
+		MALLOC_CHECK(data);
+	}
+	// Send and receive
+	if (rank == 0)
+		cout << "SENDING" << endl;
+	MPI_CHECK(MPI_Gather(local_data, D, MPI_TYPE_REAL, data, D, MPI_TYPE_REAL, 0, MPI_COMM_WORLD));
 	if (rank == 0) {
 		cout << "SAVING" << endl;
 		save_input(input_data);
 		save_model(data);
 	}
+	// Clean memory
 	free(local_data);
 	free(input_data);
 	if (rank == 0)
 		free(data);
-	MPI_Finalize();
-	return 0;
+	MPI_CHECK(MPI_Finalize());
+	return EXIT_SUCCESS;
 }
