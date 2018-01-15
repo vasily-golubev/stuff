@@ -1,0 +1,43 @@
+\documentclass[a5paper,twoside]{article}
+\usepackage[T2A]{fontenc}
+\usepackage[cp1251]{inputenc}
+\usepackage[russian]{babel}
+\usepackage[amsmath]{}
+%\usepackage[dvips]{color}
+%\usepackage[pdftex]{}
+\usepackage{latexsym, eucal, bm, color, amsfonts, amssymb,amsmath, epsfig, a4wide}
+\usepackage{indentfirst}
+\usepackage{hyperref, cite}
+%\usepackage{layout}
+%\usepackage{nccboxes}
+
+\usepackage{listings}
+\lstloadlanguages{C, bash, Gnuplot}
+\lstset{numbers=left, frame=single, breaklines=true, breakatwhitespace=true, title=\lstname, tabsize=2}
+
+\newtheorem{theorem}{Теорема}[section]
+\newtheorem{lemma}{Лемма}
+\newtheorem{corollary}{Следствие}
+\newtheorem{definition}{Определение}
+\newtheorem{property}{Свойство}
+\newtheorem{example}{Пример}
+\newtheorem{remark}{Замечение}
+\newtheorem{proposition}{Предложение}
+\newtheorem{hypothesis}{Гипотеза}
+\newtheorem{exersize}{Упражнение}
+
+
+\pagestyle {plain}
+
+\hoffset=-10.4mm \voffset=-12.4mm \oddsidemargin=5mm \evensidemargin=0mm \topmargin=0mm \headheight=0mm \headsep=0mm
+\textheight=174mm \textwidth=113mm
+
+%\binoppenalty=10000 \relpenalty=10000
+
+\makeatletter
+%\renewcommand{\section}{\@startsection{section}{1}{0pt}{-3.5ex plus -1ex minus -.2ex}{2.3ex plus.2ex}{\center\normalfont\Large\bfseries}}
+%\renewcommand{\subsection}{\@startsection{subsection}{2}{0pt}{-2.5ex plus -1ex minus -.2ex}{1.3ex plus.2ex}{\center\normalfont\large\bfseries}}
+
+\selectlanguage{russian}
+
+\input{style.sty}
