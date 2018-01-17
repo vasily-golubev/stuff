@@ -4,6 +4,25 @@
 
 \begin{document}
 
+\newcommand  {\op      } [1]     { \bm{#1}           }
+\renewcommand{\vec     } [1]     { \bm{#1}           }
+\newcommand  {\vr      }         { \vec{r}           }
+\newcommand  {\vR      }         { \vec{R}           }
+\newcommand  {\paren   } [1]     { \left( #1 \right) }
+\def          \fun       _#1(#2) { #1 \paren{#2}     }
+\newcommand  {\inv     } [1]     { \frac{1}{#1}      }
+\def          \pdsqr     _#1_#2  { \frac{\partial^2}{\partial #2^2}#1 }
+\newcommand  {\dsr   } { \fun_{\Delta s^2}(\vr) }
+\newcommand  {\rmR   } { \vr - \vR }
+\newcommand  {\rmrz  } { \vr - \vec{r}_0 }
+\newcommand  {\rmrw  } { \vr - \tilde{\vec{r}} }
+\newcommand  {\Rmrw  } { \vR - \tilde{\vec{r}} }
+\newcommand  {\armR  } { \left| \rmR  \right| }
+\newcommand  {\armrw } { \left| \rmrw \right| }
+\newcommand  {\aRmrw } { \left| \Rmrw \right| }
+\newcommand  {\armrz } { \left| \rmrz \right| }
+\renewcommand{\L     } { \fun_L(\vR,t|\vr) }
+
 \pagestyle{plain}
 
 \sloppy \fontsize {10dd}{12dd} \selectfont
@@ -18,7 +37,6 @@
 
 \input {ch_1}
 \input {ch_2}
-\input {appendix}
 \input {literatura+last_page}
 
 \end{document}
