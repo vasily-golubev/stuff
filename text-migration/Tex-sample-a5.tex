@@ -1,16 +1,18 @@
 \input{preambula}
+\input{mymacros.latex}
+\input{macros.tex}
 
 \hyphenation {ис-поль-зу-ются ра-бо-чую дли-тель-ности на-рас-та-ющий}
 
 \begin{document}
 
-\newcommand  {\op      } [1]     { \bm{#1}           }
+%\newcommand  {\op      } [1]     { \bm{#1}           }
 \renewcommand{\vec     } [1]     { \bm{#1}           }
-\newcommand  {\vr      }         { \vec{r}           }
+%\newcommand  {\vr      }         { \vec{r}           }
 \newcommand  {\vR      }         { \vec{R}           }
 \newcommand  {\paren   } [1]     { \left( #1 \right) }
 \def          \fun       _#1(#2) { #1 \paren{#2}     }
-\newcommand  {\inv     } [1]     { \frac{1}{#1}      }
+%\newcommand  {\inv     } [1]     { \frac{1}{#1}      }
 \def          \pdsqr     _#1_#2  { \frac{\partial^2}{\partial #2^2}#1 }
 \newcommand  {\dsr   } { \fun_{\Delta s^2}(\vr) }
 \newcommand  {\rmR   } { \vr - \vR }

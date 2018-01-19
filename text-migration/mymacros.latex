@@ -1,0 +1,109 @@
+\makeatletter
+
+\let\@eattoken = \relax
+\def\eattoken{\let\@eattoken = }
+
+\def \make#1#2{
+  \expandafter\def\expandafter\LOCALfun@{#1}
+  \expandafter\def\expandafter\LOCALname@{#2}
+  \make@}
+\def \make@{
+  \futurelet\lasttoken@\make@@}
+\def \make@@#1{
+  \if\lasttoken@.
+    \let\LOCALnext@\relax
+  \else
+    \expandafter\def\csname \LOCALname@#1\endcsname{{\LOCALfun@{#1}}}
+    \let\LOCALnext@\make@
+  \fi
+  \LOCALnext@  }
+
+    % Расширенные команды ссылок и сокращения
+\def \see{см.}
+\def \cie{\see~напр.}
+\def \seea{\see~также}
+\def \onp{на}
+\def \figlabel #1{\label{fig:#1}}
+	\def \figref #1{\cref{fig:#1}\ \onp\ \cpageref{fig:#1}}
+		\def \pfigref #1{(\figref{#1})}
+	\def \figrefr #1#2{\crefrange{fig:#1}{fig:#2}\ \onp\ \cpagerefrange{fig:#1}{fig:#2}}
+		\def \pfigrefr #1#2{(\figrefr{#1}{#2})}
+\def \seclabel #1{\label{sec:#1}}
+	\def \secref #1{\cref{sec:#1}}
+	\def \Secref #1{\Cref{sec:#1}}
+	\def \psecref #1{(\secref{#1})}
+\def \pgref #1{\pageref{#1}}
+\def \eqlabel #1{\label{eq:#1}}
+	\def \eqref #1{\cref{eq:#1}\ \onp\ \cpageref{eq:#1}}
+	\def \leqref #1{\labelcref{eq:#1}}
+	\def \eqrefn #1{\cref{eq:#1}}
+\def \com{,\ }
+\def \ecom{,\qquad}
+
+    % Математические операторы
+\iffalse
+  \DeclareMathOperator{\Grad}{grad}
+  \DeclareMathOperator{\Div}{div}
+  \DeclareMathOperator{\Rot}{rot}
+  \DeclareMathOperator{\Lapl}{\Delta}
+\else
+  \DeclareMathOperator{\Grad}{\nabla}
+  \DeclareMathOperator{\Div}{\nabla\cdot}
+  \DeclareMathOperator{\Rot}{\nabla\times}
+  \DeclareMathOperator{\Lapl}{\nabla^2}
+\fi
+\newcommand*{\defeq}{\mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
+                     \hbox{\scriptsize.}\hbox{\scriptsize.}}}%
+                     =}
+\newcommand*{\qedef}{=%
+                     \mathrel{\vcenter{\baselineskip0.5ex \lineskiplimit0pt
+                     \hbox{\scriptsize.}\hbox{\scriptsize.}}}}
+
+    % Математические обозначения
+\def \op #1{\bm{\mathrm{\mathbf{#1}}}}
+\def \vec #1{\bm{\mathrm{\mathbf{#1}}}}
+\def \tens #1{\hat{\bm{\mathrm{\mathbf{#1}}}}}
+\def \tr{^\mathrm{T}}
+\def \const{\mathrm{const}}
+
+    % Скобки
+\def \prn #1{\left(#1\right)}
+\def \brc #1{\left\{#1\right\}}
+\def \brk #1{\left[#1\right]}
+\def \brs #1{\left|#1\right|}
+\def \nrm #1{\left\lVert#1\right\rVert}
+\def \at #1_#2{\@ifnextchar^{\@at{#1}_{#2}}{\@@at{#1}_{#2}}}
+\def \@at #1_#2^#3{\left.#1\right|_{#2}^{#3}}
+\def \@@at #1_#2{\left.#1\right|_{#2}}
+\def \brcat#1{\at{\brc{#1}}}
+\def \brkat#1{\at{\brk{#1}}}
+
+    % Сокращения
+\def \inv #1{\frac{1}{#1}}
+\def \pD_#1{\@ifnextchar^{\@pD_{#1}}{\@@pD_{#1}}}
+\def \@pD_#1^#2#3{\frac{\partial^{#2}#3}{\partial#1^{#2}}}
+\newcounter{@pDN}
+\def \@@pD_#1#2{
+  \setcounter{@pDN}{0} % set \partial number to zero
+  {\@@@pDh#1\partial} % count \partial's
+  \frac{\partial         % numerator
+    \ifnum\value{@pDN}=1 % just \partial not \partial^1
+    \else ^{\the@pDN}\fi#2}{\@@@pD#1\partial}} % the rest
+\def\@@@pD#1{\partial#1\@@@@pD}
+\def\@@@@pD{\@ifnextchar\partial{\eattoken}{\@@@pD}}
+\def\@@@pDh#1{\stepcounter{@pDN}\@@@@pDh}
+\def\@@@@pDh{\@ifnextchar\partial{\eattoken}{\@@@pDh}}
+
+    % Уравнения
+\def\aqns{\@ifnextchar[{\aqns@l}{\aqns@n}}
+\def\aqns@l [#1]#2{\begin{equation}\eqlabel{#1}\begin{aligned}#2\end{aligned}\end{equation}}
+\def\aqns@n #1{\begin{equation*}\begin{aligned}#1\end{aligned}\end{equation*}}
+\def\eqns{\@ifnextchar[{\eqns@l}{\eqns@n}}
+\def\eqns@l [#1]#2{\begin{equation}\eqlabel{#1}\begin{gathered}#2\end{gathered}\end{equation}}
+\def\eqns@n #1{\begin{equation*}\begin{gathered}#1\end{gathered}\end{equation*}}
+
+    % ?
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\code}[1]{\colorbox{light-gray}{\texttt{#1}}}
+
+\makeatother
