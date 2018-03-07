@@ -2,7 +2,7 @@
 
 \subsection {Определяющие уравнения и приближение Борна}
 
-Динамическое поведение упругой среды задается уравнением Ламе в следующем виде
+Динамическое поведение упругой среды задается уравнением Ламе в следующем виде:
 \eqns{
 	\lamop\fld - \pD_t^2\fld = -\inv{\rho}\vec{F} ,
 	\quad\lamop = c_p^2 \Grad\Div - c_s^2\Rot\Rot .}
@@ -20,7 +20,7 @@
 Если обозначить
 \aqns{
 	\tens{g}_\alpha = \brc{\chi\prn{t'-t-s_{\alpha,b}\brs{\vr'-\vr}} - \chi\prn{t'-t}}\frac{\tens{I}}{4\pi\brs{\vr'-\vr}} ,}
-где \(\tens{I}\) -- единичный тензор и \(\chi(t) = \max(0,t)\), то тензор Грина для полученных уравнений в случае постоянных фоновых скоростей звука \(c_{\alpha,b} = \mathrm{const}\) примет вид
+где \(\tens{I}\) -- единичный тензор и \(\chi(t) = \max(0,t)\), то тензор Грина для полученных уравнений в случае постоянных фоновых скоростей звука \(c_{\alpha,b} = \mathrm{const}\) примет вид:
 \aqns{
   \gr_\alpha = \Dop_\alpha\tens{g}_\alpha = \Dop_\alpha'\tens{g}_\alpha ,
   }
@@ -38,7 +38,7 @@
 
 Введем гильбертово пространство данных волнового поля, заданных на множестве точек \(S\) в моменты времени \(T\), со скалярным произведением
 \aqns{
-  \prn{\vd_1\cdot\vd_2} = \int_{S}\int_T \vd_1\prn{\vr',t}\cdot\vd_2\prn{\vr',t} dtS ,
+  \prn{\vd_1\cdot\vd_2} = \int_{S}\int_T \vd_1\prn{\vr',t}\cdot\vd_2\prn{\vr',t} dtdS
   }
 и гильбертово пространство моделей, заданных в объеме \(V\), со скалярным произведением
 \eqns{
@@ -46,7 +46,7 @@
 	\quad \vm_i = \prn{\Delta c_{p,i}^2,\,\Delta c_{s,i}^2}\tr .}
 Оператор миграции, сопряженный к оператору прямого моделирования, задается выражением
 \eqns[migr]{
-  \Delta c_{\alpha,\mathrm{migr}}^2\prn{\vr} = \int_{S}\int_T\int_{-\infty}^{+\infty} \brc{\Lapl \fld^i_\alpha\prn{\vr,t}}\cdot\gr_{}\cdot\vd\prn{\vr',t'}dtdt'dV' .
+  \Delta c_{\alpha,migr}^2\prn{\vr} = \int_{S}\int_T\int_{-\infty}^{+\infty} \brc{\Lapl \fld^i_\alpha\prn{\vr,t}}\cdot\gr_{}\cdot\vd\prn{\vr',t'}dtdt'dV' .
   }
 
 \subsection{Точечный источник с постоянной поляризацией}
@@ -63,7 +63,7 @@
 \aqns{
   \int_{-\infty}^{+\infty} \chi\prn{t'-t} f''(t) dt = \int_0^{+\infty} f''\prn{t'-t}tdt = \brkat{f\prn{t'-t}+f'\prn{t'-t}t}_{t=+\infty}^0 ,
   }
-которое для "хороших" импульсов упрощается до \(f\prn{t'}\), а для постоянного вектора $\vec{f}$ и произвольной функции координат \(g\prn{\vr}\) справедливо
+которое для \emph{хороших} импульсов упрощается до \(f\prn{t'}\), а для постоянного вектора $\vec{f}$ и произвольной функции координат \(g\prn{\vr}\) справедливо
 \aqns{
   &\vec{f}\cdot\brk{\Dop_\alpha\prn{g\prn{\vr}\tens{I}}} = \brk{\Dop_\alpha\prn{g\prn{\vr}\tens{I}}}\cdot\vec{f} = \Dop_\alpha\prn{g\prn{\vr}\vec{f}} .
   }
@@ -85,17 +85,17 @@
 
 Получим
 \eqns{
-  \int_{-\infty}^{+\infty}\Lapl \fld^i_\beta\prn{\vr,t}\cdot\gr_\alpha dt
+  \int_{-\infty}^{+\infty}\Lapl \fld^i_\beta\prn{\vr,t}\cdot\gr_\alpha dt =
   \\ = \inv{\rho\prn{\vr_0}}\Dop_\alpha'\Dop_\beta^0\frac{
       f\prn{t'-s_{\beta,b}\brs{\vr_0-\vr}-s_{\alpha,b}\brs{\vr'-\vr}}
     }{
     16\pi^2 c_{\beta,b}^2\brs{\vr_0-\vr}\brs{\vr'-\vr}
     }\vec{f} .
   }
-С учетом этого, выражение для оператора прямого моделирования примет вид
+С учетом этого выражение для оператора прямого моделирования примет вид
 \aqns[forwfin]{
   \fld^{s,B}_\alpha\prn{\vr',t'} = \sum_\beta \inv{\rho\prn{\vr_0}}\Dop_\alpha'\Dop_\beta^0
-  \int_V \Delta c_\beta^2\prn{\vr} \\ \frac{
+  \int_V \Delta c_\beta^2\prn{\vr} \times \\ \times \frac{
       f\prn{t'-s_{\beta,b}\brs{\vr_0-\vr}-s_{\alpha,b}\brs{\vr'-\vr}}
     }{
     16\pi^2 c_{\beta,b}^2\brs{\vr_0-\vr}\brs{\vr'-\vr}
@@ -103,7 +103,7 @@
   }
 а выражение для миграционного оператора -- вид
 \eqns[migrfin]{
-  \Delta c_{\beta,\mathrm{migr}}^2\prn{\vr} = \sum_\alpha \int_{V'}\int_T \inv{\rho\prn{\vr_0}} \vec{d}\prn{\vr',t'}\cdot \\ \cdot\Dop_\alpha'\Dop_\beta^0
+  \Delta c_{\beta,migr}^2\prn{\vr} = \sum_\alpha \int_{V'}\int_T \inv{\rho\prn{\vr_0}} \vec{d}\prn{\vr',t'}\cdot \\ \cdot\Dop_\alpha'\Dop_\beta^0
     \frac{
       f\prn{t'-s_{\beta,b}\brs{\vr_0-\vr}-s_{\alpha,b}\brs{\vr'-\vr}}
     }{
@@ -120,23 +120,23 @@
 Протестируйте её на аналитических и полученных численным расчётом сейсмограммах.}
 \end {enumerate}
 
-\subsection{Вычислительная сложность и переход в частотную область}
+\subsection{Вычислительная сложность и переход \\ в частотную область}
 Рассмотрим полученные формулы с точки зрения вычислительной сложности в случае, когда приемники расположены на горизонтальной плоскости через равные промежутки вдоль каждой из горизонтальных координат. При нулевом удалении (\textit{zero-offset}) после действия операторов \(\Dop',\,\Dop^0\) нужно заменить \(\vr_0\) на \(\vr'\). После этого можно эффективно вычислять сверточные интегралы с использованием быстрого преобразования Фурье (\textit{FFT}). При этом вычислительная сложность формул получается \(O\prn{n_t n_z n_x n_y\log{n_x}\log{n_y}}\). То же касается и случая постоянного удаления, когда \(\vr_0 - \vr' = \mathrm{const}\).
 
-В случае фиксированного положения источника применение FFT непосредственно к конечным формулам возможно, если функция источника обладает свойством \(f(t+T)=f(t)f(T)\). Например, импульс Рикера таким свойством не обладает, и вычислительная сложность формул оказывается равной \(O\prn{n_t n_z n_x^2 n_y^2}\). Однако можно воспользоваться свойством преобразования Фурье
+В случае фиксированного положения источника применение FFT непосредственно к конечным формулам возможно, если функция источника обладает свойством \(f(t+T)=f(t)f(T)\). Например, импульс Рикера таким свойством не обладает, и вычислительная сложность формул оказывается равной \(O\prn{n_t n_z n_x^2 n_y^2}\). Однако можно воспользоваться свойством преобразования Фурье:
 \eqns{
-  f^F[t+T](\omega) = \int e^{-i \omega t} f(t+T) dt = e^{i\omega T} f^F[t](\omega) }
-и тогда итоговые формулы примут следующий вид
+  f^F[t+T](\omega) = \int e^{-i \omega t} f(t+T) dt = e^{i\omega T} f^F[t](\omega) },
+и тогда итоговые формулы примут следующий вид:
 \aqns[forwom]{
   \fld^{s,B,F}_\alpha\prn{\vr',\omega} = \sum_\beta \frac{f^F\prn{\omega}}{\rho\prn{\vr_0}}\Dop_\alpha'\Dop_\beta^0
-  \int_V \Delta c_\beta^2\prn{\vr} \\ \frac{
+  \int_V \Delta c_\beta^2\prn{\vr} \times \\ \times \frac{
       \exp\prn{-i\omega s_{\beta,b}\brs{\vr_0-\vr}-i\omega s_{\alpha,b}\brs{\vr'-\vr}}
     }{
     16\pi^2 c_{\beta,b}^2\brs{\vr_0-\vr}\brs{\vr'-\vr}
     }\vec{f} dV ,
   }
 \aqns[migrom]{
-  \Delta c_{\beta,\mathrm{migr}}^2\prn{\vr} =
+  \Delta c_{\beta,migr}^2\prn{\vr} =
   \sum_\alpha \int_{V'}\int_{-\infty}^{+\infty} \frac{f^F\prn{\omega}}{\rho\prn{\vr_0}} \vec{d}^F\prn{\vr',-\omega}\cdot \\ \cdot\Dop_\alpha'\Dop_\beta^0
     \frac{
       \exp\prn{-i\omega s_{\beta,b}\brs{\vr_0-\vr}-i\omega s_{\alpha,b}\brs{\vr'-\vr}}
@@ -164,7 +164,7 @@
 где \(\mirr{\Dop^0_\alpha}\) получается из \(\Dop^0_\alpha\) заменой \(\partial_{z_0}\) на \(-\partial_{z_0}\); выражения для операторов прямой и обратной задач:
 \aqns[forwfinh]{
   \fld^{s,B}_\alpha\prn{\vr',t'} = \sum_\beta \inv{\rho\prn{\vr_0}}
-  \Dop_\alpha'\int_V \Delta c_\beta^2\prn{\vr}\sum_{\vr_1 \in \{\vr,\,\mirr{\vr}\}} k_{\vr_1} \\
+  \Dop_\alpha'\int_V \Delta c_\beta^2\prn{\vr}\sum_{\vr_1 \in \{\vr,\,\mirr{\vr}\}} k_{\vr_1} \times \\ \times
     (
       \Dop^0_\beta\frac{
         f\prn{t'-s_{\beta,b}\brs{\vr_0-\vr}-s_{\alpha,b}\brs{\vr'-\vr_1}}
@@ -178,7 +178,7 @@
       }
     )\vec{f} dV ,}
 \aqns[migrfinh]{
-  \Delta c_{\beta,\mathrm{migr}}^2\prn{\vr} = \sum_\alpha \int_{V'}\int_T \inv{\rho\prn{\vr_0}} \vec{d}\prn{\vr',t'}\cdot\Dop_\alpha'\sum_{\vr_1 \in \{\vr,\,\mirr{\vr}\}} k_{\vr_1} \\
+  \Delta c_{\beta,migr}^2\prn{\vr} = \sum_\alpha \int_{V'}\int_T \inv{\rho\prn{\vr_0}} \vec{d}\prn{\vr',t'}\cdot\Dop_\alpha'\sum_{\vr_1 \in \{\vr,\,\mirr{\vr}\}} k_{\vr_1} \times \\ \times
     (
       \Dop^0_\beta\frac{
         f\prn{t'-s_{\beta,b}\brs{\vr_0-\vr}-s_{\alpha,b}\brs{\vr'-\vr_1}}
@@ -202,7 +202,7 @@
 
 \subsection{Произвольная фоновая модель среды}
 Согласно изложенному выше для построения как решения прямой сейсмической задачи, так и миграционного изображения необходимо знать функцию Грина для фоновой модели.
-К сожалению, аналитически либо полу-аналитически она может быть найдена лишь для простейших случаев, таких как однородная среда, слоистая среда.
+К сожалению, аналитически либо полуаналитически она может быть найдена лишь для простейших случаев, таких как однородная среда, слоистая среда.
 Как правило, данных моделей недостаточно для того, чтобы адекватно описать реальную геологическую среду.
 В связи с этим необходимо использовать другие подходы к решению этих задач.
 Одним из таковых является построение оператора $L$ в рамках конечно-разностных либо конечно-объёмных расчётных схем. 
@@ -210,41 +210,40 @@
 Для решения прямых задач сейсмической разведки в последние годы хорошо себя зарекомендовал сеточно-характеристический численный метод на структурных и неструктурных сетках [11, 12].
 Он позволяет для заданных источников, приемников и произвольного распределения параметров среды получить синтетические сейсмограммы и найти в исследуемой области поле скоростей смещения.
 Рассмотрим подробнее способ построения миграционного изображения среды по получаемым в процессе сейсмической разведки полевым данным.
-Близость приближенного решения (вектор распределения параметров модели по пространству) обратной задачи к истинной модели среды можно оценить с использованием функционала невязки в следующем виде
+Близость приближенного решения (вектор распределения параметров модели по пространству) обратной задачи к истинной модели среды можно оценить с использованием функционала невязки в следующем виде:
 
 \begin{equation}
-\chi(\vec{m})=\frac{1}{2}\sum\limits_{r}\int\Vert\vec{s}(\vec{x}_r,t; \vec{m})-\vec{d}(\vec{x}_r,t)\Vert^2dt
+\chi(\vec{m})=\frac{1}{2}\sum\limits_{r}\int\Vert\vec{s}(\vec{x}_r,t; \vec{m})-\vec{d}(\vec{x}_r,t)\Vert^2dt.
 \end{equation}
 
-Здесь $\vec{x}_r$ – положение $r$-го приёмника, $\vec{s}$ и $\vec{d}$ – синтетическая и полевая сейсмограммы скорости смещения, суммирование ведется по всем приёмникам.
+Здесь $\vec{x}_r$~-- положение $r$~--го приёмника, $\vec{s}$ и $\vec{d}$~-- синтетическая и полевая сейсмограммы скорости смещения, суммирование ведется по всем приёмникам.
 В случае, когда полевые данные представляют собой набор сейсмограмм для разных конфигураций источников, можно выбрать $\vec{d}$ так, что показания одного сейсмометра из $\vec{d}$  будут суммой показаний этого сейсмометра по всему набору. Заметим, что соответствующие синтетические сейсмограммы могут быть получены в результате моделирования, в котором источник задан как одновременное действие источников, расположенных в местах расположения сейсмоприёмников при полевом исследовании. Это возможно в силу линейности по внешнему возмущению уравнений линейной динамической теории упругости.
 В работе [13] для изотропной упругой среды вариация функционала невязки вычислена с помощью одного из следующих интегралов по всему пространству:
 
 \begin{equation}
-\delta\chi=\int (K_\rho\delta\ln\rho+K_K\delta\ln K+K_\mu\delta\ln\mu) d^3\vec{x}
+\delta\chi=\int (K_\rho\delta\ln\rho+K_K\delta\ln K+K_\mu\delta\ln\mu) d^3\vec{x},
 \end{equation}
 
 \begin{equation}
-\delta\chi=\int (K_Z\delta\ln Z+K_{C_P}\delta\ln C_P+K_{C_S}\delta\ln C_S) d^3\vec{x}
+\delta\chi=\int (K_Z\delta\ln Z+K_{C_P}\delta\ln C_P+K_{C_S}\delta\ln C_S) d^3\vec{x},
 \end{equation}
-
-где $\rho$ – плотность среды, $K$ и $\mu$ – модуль всестороннего сжатия и модуль сдвига, $C_P$ и $C_S$ – скорости продольной и поперечной волн, $Z=\rho C_P$ – импеданс сжатия, $K_\alpha$ – ядро параметра $\alpha$.
+где $\rho$~-- плотность среды, $K$ и $\mu$~-- модуль всестороннего сжатия и модуль сдвига, $C_P$ и $C_S$ – скорости продольной и поперечной волн, $Z=\rho C_P$ – импеданс сжатия, $K_\alpha$ – ядро параметра $\alpha$.
 В указанной работе миграционное изображение формируется по ядру импеданса $K_Z$, которое определяется из выражений
 \begin{equation}
 \label{eq_luo}
 \begin{gathered}
-K_Z = K_\rho + K_K + K_\mu \\
-K_\rho(\vec{x}) = \rho(\vec{x})\int\upsilon^\dagger(\vec{x}, -t)\upsilon(\vec{x}, t)dt \\
-K_K(\vec{x}) = -K(\vec{x}\int[\nabla\cdot\vec{s}^\dagger(\vec{x}, -t)][\nabla\cdot\vec{s}(\vec{x}, t)]dt \\
-K_\mu(\vec{x}) = -2\mu(\vec{x})\int\vec{D}^\dagger(\vec{x}, -t):\vec{D}(\vec{x}, t)dt \\
+K_Z = K_\rho + K_K + K_\mu, \\
+K_\rho(\vec{x}) = \rho(\vec{x})\int\upsilon^\dagger(\vec{x}, -t)\upsilon(\vec{x}, t)dt, \\
+K_K(\vec{x}) = -K(\vec{x}\int[\nabla\cdot\vec{s}^\dagger(\vec{x}, -t)][\nabla\cdot\vec{s}(\vec{x}, t)]dt, \\
+K_\mu(\vec{x}) = -2\mu(\vec{x})\int\vec{D}^\dagger(\vec{x}, -t):\vec{D}(\vec{x}, t)dt, \\
 \vec{D} = \frac{\nabla\vec{s}+(\nabla\vec{s})^T}{2} - \frac{\nabla\cdot\vec{s}}{3}\vec{I}, \vec{D}^\dagger:\vec{D} =
-\sum\limits_{i,j}D_{ij}^\dagger D_{ij}
+\sum\limits_{i,j}D_{ij}^\dagger D_{ij}.
 \end{gathered}
 \end{equation}
 Здесь $\vec{s}$ и $\vec{\upsilon}$ – смещение и скорость, $\vec{s}^\dagger$ и $\vec{\upsilon}^\dagger$ – сопряженные величины, $\vec{I}$ – единичный тензор, и в выражениях фигурируют параметры фоновой модели среды.
 Для получения сопряженного поля скоростей используется сопряженный источник:
 \begin{equation}
-\vec{f}^\dagger(\vec{x}, t) = \sum\limits_r[\vec{s}(\vec{x}_r, -t) - \vec{d}(\vec{x}, -t)]\delta(\vec{x}-\vec{x}_r)
+\vec{f}^\dagger(\vec{x}, t) = \sum\limits_r[\vec{s}(\vec{x}_r, -t) - \vec{d}(\vec{x}, -t)]\delta(\vec{x}-\vec{x}_r).
 \end{equation}
 При этом решение данной системы также проводится численно тем же самым методом, что решалась прямая задача.
 
