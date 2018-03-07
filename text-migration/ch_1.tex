@@ -58,19 +58,24 @@ G^w(\vec{r}, t | \vec{r'}, t') = \frac{1}{4\pi|\vec{r} - \vec{r'}|}\delta(t - t'
 
 \begin{equation}
 \label{eq_kirchhoff_formula}
-P(\vec{r'}, t') = \int_S \int_{-\infty}^{+\infty} [G^w(\vec{r'}, t' | \vec{r}, t) \frac{\partial}
-{\partial n} P(\vec{r}, t) - P(\vec{r}, t) \frac{\partial}{\partial n} G^w(\vec{r'}, t' |
+\begin{gathered}
+P(\vec{r'}, t') = \int_S \int_{-\infty}^{+\infty} [G^w(\vec{r'}, t' | \vec{r}, t)
+\times \\ \times
+\frac{\partial}{\partial n} P(\vec{r}, t) - P(\vec{r}, t) \frac{\partial}{\partial n} G^w(\vec{r'}, t' |
 \vec{r}, t)] dt ds.
+\end{gathered}
 \end{equation}
 
 «десь штриховые координаты соответствуют точке, лежащей внутри рассматриваемой области.
 ѕодставл€€ в (\ref{eq_kirchhoff_formula}) выражение дл€ формулы √рина в €вном виде (\ref{eq_grin_function}), получим
 \begin{equation}
 \label{eq_kirchhoff_homogeneous}
+\begin{gathered}
 P(\vec{r'}, t') = \frac{1}{4\pi} \int_S [\frac{1}{c|\vec{r'} - \vec{r}|}
 \frac{\partial |\vec{r'} - \vec{r}|}{\partial n}\frac{\partial P'}{\partial t'}
-- \frac{\partial}{\partial n}(\frac{1}{|\vec{r'} - \vec{r}|}) P' + 
+- \frac{\partial}{\partial n}(\frac{1}{|\vec{r'} - \vec{r}|}) P' + \\ +
 \frac{1}{|\vec{r'} - \vec{r}|}\frac{\partial}{\partial n}P'] ds,
+\end{gathered}
 \end{equation}
 где $P' = P(\vec{r}, t' - \frac{|\vec{r'} - \vec{r}|}{c})$.
 
@@ -93,7 +98,9 @@ P_{ricker} = P_0(1-2 \pi^2f^2t^2)e^{-\pi^2f^2t^2},
 тогда функци€ $P'(\vec{r'}, t')$ может быть записана в виде
 \begin{equation}
 \label{eq_surface_pressure}
-P'(\vec{r'}, t') = P(\vec{r}, t' - \frac{|\vec{r'} - \vec{r}|}{c}) = P_0(1-2 \pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2)e^{-\pi^2f^2(t'-\frac{|\vec{r'} - \vec{r}|}{c})^2}.
+\begin{gathered}
+P'(\vec{r'}, t') = P(\vec{r}, t' - \frac{|\vec{r'} - \vec{r}|}{c}) = P_0(1-2 \pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2) \times \\ \times e^{-\pi^2f^2(t'-\frac{|\vec{r'} - \vec{r}|}{c})^2}.
+\end{gathered}
 \end{equation}
 
 — учЄтом (\ref{eq_surface_pressure}) аналитически могут быть получены значени€
@@ -104,8 +111,10 @@ P'(\vec{r'}, t') = P(\vec{r}, t' - \frac{|\vec{r'} - \vec{r}|}{c}) = P_0(1-2 \pi
 и
 \begin{equation}
 \label{eq_dp'_dz}
-\frac{\partial P'}{\partial z} = -2\pi^2f^2P_0(t' - \frac{|\vec{r'} - \vec{r}|}{c})[3-2 \pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2]e^{-\pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2}
+\begin{gathered}
+\frac{\partial P'}{\partial z} = -2\pi^2f^2P_0(t' - \frac{|\vec{r'} - \vec{r}|}{c})[3-2 \pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2] \times \\ \times e^{-\pi^2f^2(t' - \frac{|\vec{r'} - \vec{r}|}{c})^2}
 \frac{z'-z}{c|\vec{r'}-\vec{r}|}.
+\end{gathered}
 \end{equation}
 “аким образом, может быть рассчитано поле в произвольной точке внутри области, ограниченной поверхностью $S$.
 
@@ -134,7 +143,9 @@ U^m(\vec{r'}) = -\frac{1}{2\pi}\frac{\partial}{\partial z'}
 ¬ таком случае формула (\ref{rayleigh_migration}) может быть записана в виде
 \begin{equation}
 \label{rayleigh_migration_discrete}
-U^m(i,j,k) = -\frac{1}{2\pi}\frac{\sum\limits_{l,m} \frac{P(l,m,\frac{2d(i,j,k+1,l,m)}{c})}{d(i,j,k+1,l,m)}\delta x \delta y - \sum\limits_{l,m} \frac{P(l,m,\frac{2d(i,j,k,l,m)}{c})}{d(i,j,k,l,m)}\delta x \delta y}{\delta z},
+\begin{gathered}
+U^m(i,j,k) = -\frac{1}{2\pi\delta z}\sum\limits_{l,m} \frac{P(l,m,\frac{2d(i,j,k+1,l,m)}{c})}{d(i,j,k+1,l,m)}\delta x \delta y + \\ +\frac{1}{2\pi\delta z}\sum\limits_{l,m} \frac{P(l,m,\frac{2d(i,j,k,l,m)}{c})}{d(i,j,k,l,m)}\delta x \delta y,
+\end{gathered}
 \end{equation}
 где $d(i,j,k,l,m)=\sqrt{(l-i)^2(\delta x)^2 + (m-j)^2(\delta y)^2  + (k)^2(\delta z)^2}$, а начало координат находитс€ в точке $(i,j,k)=(0,0,0)$.
 
@@ -200,11 +211,13 @@ p^i(\vec{r}, w) = \frac{1}{4\pi|\vec{r}-\vec{r}_0|}e^{iw\frac{|\vec{r}-\vec{r}_0
 
 ѕодставл€€ (\ref{eq_point_explosion}) в формулу (\ref{eq_born_approximation_2}) получим:
 
-\begin{eqnarray}
+\begin{equation}
 \label{eq_born_approximation_3}
-p^s(\vec{r}_j, w) = w^2\int_D \frac{1}{4\pi|\vec{r}-\vec{r}_j|}e^{iw\frac{|\vec{r}-\vec{r}_j|}{c_b}} \Delta s^2(\vec{r})\frac{1}{4\pi|\vec{r}-\vec{r}_0|}e^{iw\frac{|\vec{r}-\vec{r}_0|}{c_b}}  dv = \nonumber \\
+\begin{gathered}
+p^s(\vec{r}_j, w) = w^2\int_D \frac{1}{4\pi|\vec{r}-\vec{r}_j|}e^{iw\frac{|\vec{r}-\vec{r}_j|}{c_b}} \Delta s^2(\vec{r})\frac{1}{4\pi|\vec{r}-\vec{r}_0|}e^{iw\frac{|\vec{r}-\vec{r}_0|}{c_b}}  dv = \\
 = \frac{w^2}{16\pi^2} \int_D \frac{e^{iw\frac{|\vec{r}-\vec{r}_0| + |\vec{r}-\vec{r}_j|}{c_b}}}{|\vec{r}-\vec{r}_j||\vec{r}-\vec{r}_0|} \Delta s^2(\vec{r}) dv.
-\end{eqnarray}
+\end{gathered}
+\end{equation}
 
 Ёто и €вл€етс€ конечной аналитической формулой дл€ вычислени€ отражЄнного пол€.
 
@@ -240,7 +253,7 @@ p^s(x_j, w) = \sum_{(ind)\in [0, L * P - 1]} L_{j,ind} \Delta s_{ind}^2,
 \end{equation}
 
 где матрица $L_{j,ind} = \frac{w^2 \delta x \delta z}{16\pi^2} \frac{e^{iw\frac{D_{ind}+d_{j,ind}}{c_b}}}{D_{ind}d_{j,ind}}$,
-$D_{ind}=\sqrt{(x_{ind} - x_0)^2 + (y_{ind} - y_0)^2}$ и $d_{j,ind}=\sqrt{(x_{ind} - x_j)^2 + y_{ind}^2}$.
+$$D_{ind}=\sqrt{(x_{ind} - x_0)^2 + (y_{ind} - y_0)^2}$$ и $$d_{j,ind}=\sqrt{(x_{ind} - x_j)^2 + y_{ind}^2}$$.
 
 “аким образом, получена линеаризованна€ св€зь между данными на приЄмниках и параметрами модели.
 
@@ -298,11 +311,15 @@ RW(t) = \left( 1 - 2 \pi^2 f_M^2 t^2 \right) e^{- \pi^2 f_M^2 t^2}.
 \end{equation}
 и $\tau = \pi f_M \left( t - 2 s_b \armR \right)$. ¬ соответствии с полученным выражением оператор пр€мого моделировани€ $\op L$ имеет вид
 \begin{equation} \label{th_1}
-\fun_d(\vR,t) = \fun_L(\vR,t|\vr) \fun_m(\vr) = \int_{\vr\in D} \frac{ f_M^2 }{ 2 \left( \rmR \right)^2 } e^{ -\tau^2 } \left( \tau^4 - 3 \tau^2 + \frac{3}{4} \right) \fun_m(\vr) dV ,
+\begin{gathered}
+\fun_d(\vR,t) = \fun_L(\vR,t|\vr) \fun_m(\vr) = \int_{\vr\in D} \frac{ f_M^2 }{ 2 \left( \rmR \right)^2 } \times \\ \times e^{ -\tau^2 } \left( \tau^4 - 3 \tau^2 + \frac{3}{4} \right) \fun_m(\vr) dV ,
+\end{gathered}
 \end{equation}
 а сопр€женный к нему оператор $\op L^*$:
 \begin{equation} \label{th_2}
-\fun_m(\vR) = \fun_L^*(\vR|\vr,t) \fun_d(\vr, t) = \int_{t_{min}}^{t_{max}} \int_{\vr\in S} \frac{ f_M^2 }{ 2 \left( \rmR \right)^2 } e^{ -\tau^2 } \left( \tau^4 - 3 \tau^2 + \frac{3}{4} \right) \fun_d(\vr,t) dS dt ,
+\begin{gathered}
+\fun_m(\vR) = \fun_L^*(\vR|\vr,t) \fun_d(\vr, t) = \int_{t_{min}}^{t_{max}} \int_{\vr\in S} \frac{ f_M^2 }{ 2 \left( \rmR \right)^2 } \times \\ \times e^{ -\tau^2 } \left( \tau^4 - 3 \tau^2 + \frac{3}{4} \right) \fun_d(\vr,t) dS dt ,
+\end{gathered}
 \end{equation}
 где $S$ принадлежит границе области $G$, а $\left(t_{min},t_{max}\right)$ -- некоторый временной диапазон.
 
@@ -314,4 +331,4 @@ RW(t) = \left( 1 - 2 \pi^2 f_M^2 t^2 \right) e^{- \pi^2 f_M^2 t^2}.
 \item{Ќапишите программу, вычисл€ющую миграционное изображение среды в 2D постановке. ¬ерифицируйте результат на простейших модел€х неоднородных сред.}
 \end {enumerate}
 
-\clearpage
+%\clearpage

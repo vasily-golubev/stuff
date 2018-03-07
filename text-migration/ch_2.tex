@@ -26,12 +26,12 @@
   }
 а первичное и вторичное пол€ будут задаватьс€ выражени€ми
 \aqns[fldi]{
-  \fld^i_\alpha\prn{\vr',t'} = & \int_V\int_{-\infty}^{+\infty} \inv{\rho\prn{\vr}} \vec{F}\prn{\vr,t}\cdot\gr_\alpha dtdV ,\\
-  \fld^s_\alpha\prn{\vr',t'} = & \int_V\int_{-\infty}^{+\infty} \brc{\Delta\lamop\prn{\vr}\brk{\fld^i\prn{\vr,t}+\fld^s\prn{\vr,t}}}\cdot\gr_\alpha dtdV . 
+  \fld^i_\alpha\prn{\vr',t'} = \int_V\int_{-\infty}^{+\infty} \inv{\rho\prn{\vr}} \vec{F}\prn{\vr,t}\cdot\gr_\alpha dtdV, \\
+  \fld^s_\alpha\prn{\vr',t'} = \int_V\int_{-\infty}^{+\infty} \brc{\Delta\lamop\prn{\vr}\brk{\fld^i\prn{\vr,t}+\fld^s\prn{\vr,t}}}\cdot\\\cdot\gr_\alpha dtdV . 
   }
 ¬ приближении Ѕорна пренебрежем \(\fld^s\) в правой части последнего выражени€, и оператор пр€мого моделировани€ примет вид [9, 10]
 \aqns[forw]{
-  \fld^{s,B}_\alpha\prn{\vr',t'} = & \int_V\int_{-\infty}^{+\infty} \brc{\Delta c_p^2\prn{\vr}\Lapl\fld^i_p\prn{\vr,t} + \Delta c_s^2\prn{\vr}\Lapl\fld^i_s\prn{\vr,t}}\cdot \\ 
+  \fld^{s,B}_\alpha\prn{\vr',t'} = \int_V\int_{-\infty}^{+\infty} \brc{\Delta c_p^2\prn{\vr}\Lapl\fld^i_p\prn{\vr,t} + \Delta c_s^2\prn{\vr}\Lapl\fld^i_s\prn{\vr,t}}\cdot \\ 
 \cdot\gr_\alpha dtdV ,
   }
 где учтены свойства потенциальных и соленоидальных полей \(\Dop_\alpha\fld^i_\alpha = \Lapl\fld^i_\alpha\).
@@ -46,7 +46,7 @@
 	\quad \vm_i = \prn{\Delta c_{p,i}^2,\,\Delta c_{s,i}^2}\tr .}
 ќператор миграции, сопр€женный к оператору пр€мого моделировани€, задаетс€ выражением
 \eqns[migr]{
-  \Delta c_{\alpha,migr}^2\prn{\vr} = \int_{S}\int_T\int_{-\infty}^{+\infty} \brc{\Lapl \fld^i_\alpha\prn{\vr,t}}\cdot\gr_{}\cdot\vd\prn{\vr',t'}dtdt'dV' .
+  \Delta c_{\alpha,migr}^2\prn{\vr} = \int_{S}\int_T\int_{-\infty}^{+\infty} \brc{\Lapl \fld^i_\alpha\prn{\vr,t}}\cdot\gr_{}\cdot \\ \cdot\vd\prn{\vr',t'}dtdt'dV' .
   }
 
 \subsection{“очечный источник с посто€нной пол€ризацией}
@@ -61,7 +61,7 @@
 
 «аметим, что имеет место соотношение
 \aqns{
-  \int_{-\infty}^{+\infty} \chi\prn{t'-t} f''(t) dt = \int_0^{+\infty} f''\prn{t'-t}tdt = \brkat{f\prn{t'-t}+f'\prn{t'-t}t}_{t=+\infty}^0 ,
+  \int_{-\infty}^{+\infty} \chi\prn{t'-t} f''(t) dt = \int_0^{+\infty} f''\prn{t'-t}tdt = \\ = \brkat{f\prn{t'-t}+f'\prn{t'-t}t}_{t=+\infty}^0 ,
   }
 которое дл€ \emph{хороших} импульсов упрощаетс€ до \(f\prn{t'}\), а дл€ посто€нного вектора $\vec{f}$ и произвольной функции координат \(g\prn{\vr}\) справедливо
 \aqns{
@@ -80,7 +80,7 @@
 можно упростить комбинации \(\Lapl\fld^i_p ,\, \Lapl\fld^i_s\), вход€щие в выражени€ дл€ операторов пр€мой и обратной задач:
 \eqns{
   \Lapl \fld^i_\alpha\prn{\vr,t} = \Dop_\alpha\frac{F\prn{t-s_{\alpha,b}\brs{\vr_0-\vr}}\vec{f}}{4\pi c_{\alpha,b}^2\rho\prn{\vr_0}\brs{\vr_0-\vr}}
-  = \inv{\rho\prn{\vr_0}}\Dop_\alpha^0\frac{F\prn{t-s_{\alpha,b}\brs{\vr_0-\vr}}\vec{f}}{4\pi c_{\alpha,b}^2\brs{\vr_0-\vr}} .
+= \\  = \inv{\rho\prn{\vr_0}}\Dop_\alpha^0\frac{F\prn{t-s_{\alpha,b}\brs{\vr_0-\vr}}\vec{f}}{4\pi c_{\alpha,b}^2\brs{\vr_0-\vr}} .
   }
 
 ѕолучим
@@ -153,7 +153,7 @@
 “огда тензор √рина принимает вид
 \eqns{
   \grh_\alpha = \Dop'_\alpha\brk{\tens{g}_\alpha - \mirr{\tens{g}_\alpha}} ,\\
-  \mirr{\tens{g}_\alpha} = \brc{\chi\prn{t'-t-s_{\alpha,b}\brs{\vr'-\mirr{\vr}}} - \chi\prn{t'-t}}\frac{\tens{I}}{4\pi\brs{\vr'-\mirr{\vr}}} ,
+  \mirr{\tens{g}_\alpha} = \brc{\chi\prn{t'-t-s_{\alpha,b}\brs{\vr'-\mirr{\vr}}} - \chi\prn{t'-t}}\frac{\tens{I}}{4\pi\brs{\vr'-\mirr{\vr}}} , \\
 	\quad\mirr{\vr} = \prn{x,\,y,\,-z}\tr .}
 
 –ассужда€ аналогично предыдущему, получим выражени€ дл€ первичного пол€:
