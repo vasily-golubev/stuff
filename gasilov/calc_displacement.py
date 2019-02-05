@@ -20,7 +20,7 @@ for i in range(steps):
 		fin.readline()
 	data = fin.readline().split("\t")
 	time.append(data[0])
-	vy.append(data[2])
+	vy.append(data[3])
 # Assume that v(0) = 0 mm/s
 disp = [0]
 for vel in vy:

@@ -1,0 +1,817 @@
+\section{Метод конечных элементов}
+
+Рассмотрим пространство $H^1(0,L)=H^1\{h|\int_0^L(h^2 + D^2(\frac{dh}{dx})^2)dx < \infty\}$, где $D$ некоторая константа.
+Тогда задача (\ref{eq:weak_form}) может быть записана в следующем виде.
+Необходимо найти функцию $u^h(x) \in S^h\{u^h|u^h(0)=u_0\}$, такую что $\forall \omega^h \in V^h\{v^h|v^h(0)=0\}$ справедливо равенство
+\begin{equation}
+    \label{eq:weak_form_h1}
+    \int_0^L \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx=\int_0^L \omega^h fdx + \omega^h(L)tA(L).
+\end{equation}
+
+\subsection{Локальные степени свободы}
+
+Выведем расчётные формулы для метода конечных элементов.
+Для этого разобьём весь стержень ($\Omega$) на отрезки (элементы) точками $x^1, x^2, ..., x^{n_{el} + 1}$, которые обозначим, соответственно, $\Omega^1$, $\Omega^2$, ..., $\Omega^{n_{el}}$, $n_{el}$ - число получившихся подобластей.
+Отметим, что справедливо выражение $\bar{\Omega}=\widebar{\bigcup\limits_{e=1}^{n_{el}}\Omega^e}$.
+
+В виду того, что интеграл по области $\Omega$ можно записать как сумму интегралов по всем подобластям $\Omega^e$, будет справедлива следующая запись
+
+\begin{equation}
+    \label{eq:weak_form_fem}
+    \sum_{e=1}^{n_{el}}\int_{\Omega^e} \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx=\sum_{e=1}^{n_{el}}\int_{\Omega^e} \omega^h fdx + \omega^h(L)tA(L).
+\end{equation}
+
+Сосредоточимся на рассмотрении одного выделенного элемента $\Omega^e=(x^e, x^{e+1})$. Введём локальную систему координат, обозначив $x_e^1 = x^e, x_e^2 = x^{e+1}$. Возьмём на элементе две линейные функции $N^1(x)$ и $N^2(x)$, которые определят нам базис. Причём выберем их так, чтобы они обладали свойством символа Кронекера: $N^1(x_e^1)=1, N^1(x_e^2)=0$ и $N^2(x_e^1)=0, N^2(x_e^2)=1$. Разложим по этому базису нашу искомую функцию $u_e^h(x)=\sum_{A=1}^2 N^A(x)d_e^A$. Индекс $e$ означает, что данное представление справедливо на множестве $\Omega^e$.
+Аналогично можно разложить по этому базису и весовые функции $\omega_e^h(x)=\sum_{A=1}^2 N^A(x)c_e^A$.
+Мы считаем, что коэффициенты $d_e^A$ и $c_e^A$ постоянны и не зависят от координаты $x$ внутри элемента.
+В дальнейшем работать с базисными функциями будет удобнее в так называемой "bi-unit domain" \, которая представляет собой интервал $(-1,1)$. Пусть эта область параметризуется переменной $\xi$. Тогда в ней базисные функции имеют вид $N^1(\xi)=\frac{1-\xi}{2}, N^2(\xi)=\frac{1+\xi}{2}$.
+Нужно также отметить их специальное свойство: $N^1(\xi)+N^2(\xi)=1 \forall \xi$.
+Для вычисления интегралов в (\ref{eq:weak_form_fem}) нам необходимо знать $\frac{d\omega^h}{dx}$ и $\frac{du^h}{dx}$. Поскольку $d_e^A$ константы, справедливо выражение
+$$
+\frac{du_e^h}{dx}=\sum_{A=1}^2 \frac{dN^A(x)}{dx}d_e^A=\sum_{A=1}^2 \frac{dN^A(\xi)}{d\xi}\frac{d\xi}{dx}d_e^A.
+$$
+Аналогично получается выражение для весовых функций:
+$$
+\frac{d\omega_e^h}{dx}=\sum_{A=1}^2 \frac{dN^A(x)}{dx}c_e^A=\sum_{A=1}^2 \frac{dN^A(\xi)}{d\xi}\frac{d\xi}{dx}c_e^A.
+$$
+
+Для вычисления производной $\frac{d\xi}{dx}$ вычислим сначала обратную к ней. Мы можем линейно отобразить пространство $\Omega^e$ в $\Omega^\xi$, используя введённые базисные функции
+$$
+x_e(\xi)=\sum_{A=1}^2N^A(\xi)x_e^A.
+$$
+
+Тогда будет справедливо следующее соотношение, в котором $h^e$ обозначает размер $\Omega^e$:
+
+\begin{equation}
+    \label{eq:x_xi_derivative}
+    \begin{gathered}
+    \frac{dx_e}{d\xi}=\sum_{A=1}^2\frac{dN^A(\xi)}{d\xi}x_e^A=\frac{dN^1(\xi)}{d\xi}x^e+\frac{dN^2(\xi)}{d\xi}x^{e+1}=\\
+    =\frac{x^{e+1}-x^e}{2}=\frac{h^e}{2}.
+    \end{gathered}
+\end{equation}
+
+Тогда искомая производная $\frac{d\xi}{dx}=\frac{2}{h^e}$. Подставляя полученные соотношения в уравнение (\ref{eq:weak_form_fem}), перепишем слагаемые для каждого элемента в виде
+
+\begin{equation}
+    \label{eq:integral_left_e_1}
+    \begin{gathered}
+        I_1^e=\int_{\Omega^e} \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx= \\
+        =\int_{\Omega^e}\left(\sum_{A=1}^2\frac{dN^A(\xi)}{d\xi}\frac{2}{h^e}c_e^A\right)EA\left(\sum_{B=1}^2\frac{dN^B(\xi)}{d\xi}\frac{2}{h^e}d_e^B\right)\frac{dx}{d\xi}d\xi= \\
+         =\int_{\Omega^{\xi}}\left(\sum_{A=1}^2\frac{dN^A(\xi)}{d\xi}c_e^A\right)\frac{2EA}{h^e}\left(\sum_{B=1}^2\frac{dN^B(\xi)}{d\xi}d_e^B\right)d\xi= \\
+         =\sum_{A,B=1}^2c_e^A\left(\int_{\Omega^{\xi}}\frac{dN^A(\xi)}{d\xi}\frac{2EA}{h^e}\frac{dN^B(\xi)}{d\xi}d\xi\right)d_e^B,
+    \end{gathered}
+\end{equation}
+
+\begin{equation}
+    \label{eq:integral_left_e_2}
+    \begin{gathered}
+        I_2^e=\int_{\Omega^e} \omega^h fdx=\int_{\Omega^e}\left(\sum_{A=1}^2N^Ac_e^A\right)f\frac{dx}{d\xi}d\xi= \\
+        =\int_{\Omega^{\xi}}\left(\sum_{A=1}^2N^Ac_e^A\right)\frac{fh^e}{2}d\xi=\sum_{A=1}^2c_e^A\left(\int_{\Omega^{\xi}}\frac{N^Afh^e}{2}d\xi\right).
+    \end{gathered}
+\end{equation}
+
+Для краткости введём обозначение $\frac{dN}{d\xi}=N_{,\xi}$.
+Заметим, что оба интеграла можно представить в матричном виде. Например,
+
+\begin{equation}
+    I_1^e=\begin{bmatrix}
+        c_e^1 & c_e^2
+        \end{bmatrix}
+        \int_{\Omega^{\xi}}\frac{2EA}{h^e}
+        \begin{bmatrix}
+        N^1_{,\xi}N^1_{,\xi} & N^1_{,\xi}N^2_{,\xi} \\
+        N^2_{,\xi}N^1_{,\xi} & N^2_{,\xi}N^2_{,\xi}      
+        \end{bmatrix}d\xi
+        \begin{bmatrix}
+        d_e^1 \\
+        d_e^2
+        \end{bmatrix},
+\end{equation}
+
+причём
+\begin{equation}
+        \begin{bmatrix}
+        N^1_{,\xi}N^1_{,\xi} & N^1_{,\xi}N^2_{,\xi} \\
+        N^2_{,\xi}N^1_{,\xi} & N^2_{,\xi}N^2_{,\xi}      
+        \end{bmatrix} =
+        \frac{1}{4}
+        \begin{bmatrix}
+        1 & -1 \\
+        -1 & 1
+        \end{bmatrix}.
+\end{equation}
+
+Аналогично,
+\begin{equation}
+    I_2^e=\begin{bmatrix}
+        c_e^1 & c_e^2
+        \end{bmatrix}
+        \int_{\Omega^{\xi}}\frac{fh^e}{2}
+        \begin{bmatrix}
+        N^1 \\
+        N^2
+        \end{bmatrix}d\xi,
+\end{equation}
+
+причём
+\begin{equation}
+    \begin{bmatrix}
+    N^1 \\
+    N^2
+    \end{bmatrix} =
+    \frac{1}{2}
+    \begin{bmatrix}
+    1-\xi \\
+    1+\xi
+    \end{bmatrix}.
+\end{equation}
+
+Подставляя теперь полученные выражения в исходное интегральное уравнение (\ref{eq:weak_form_fem}), определяющее метод конечных элементов, получим
+
+\begin{equation}
+    \begin{gathered}
+    \sum_{e=1}^{n_{el}}
+    \begin{bmatrix}
+    c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{EA}{2h^e}
+    \begin{bmatrix}
+    1 & -1 \\
+    -1 & 1      
+    \end{bmatrix}d\xi
+    \begin{bmatrix}
+    d_e^1 \\
+    d_e^2
+    \end{bmatrix} = \\
+    =\sum_{e=1}^{n_{el}}
+    \begin{bmatrix}
+    c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{fh^e}{4}
+    \begin{bmatrix}
+    1-\xi \\
+    1+\xi
+    \end{bmatrix}d\xi
+    +
+    \omega^h_{n_{el}}(L)tA(L).
+    \end{gathered}
+\end{equation}
+
+По постановке задачи мы имеем граничное условие на функцию $\omega^h$ в точке $x=0$: $\omega^h(0)=0$. Раскладывая её на интервале $\Omega^1$ по базисным функциям, получим
+$$
+\omega^h(0)=\omega^h_1(0)=N^1(0)c^1_1 + N^2(0)c^2_1=c^1_1=0.
+$$
+
+Дополнительно преобразуем выражение
+$$
+\omega^h_{n_{el}}(L)=N^1(L)c_{n_{el}}^1+N^2(L)c_{n_{el}}^2=c_{n_{el}}^2.
+$$
+Тогда, выделяя явно член, соответствующий интервалу $\Omega^1$, получим равенство
+
+\begin{equation}
+    \begin{gathered}
+    c_1^2\int_{\Omega^1}\frac{EA}{2h^1}
+    \begin{bmatrix}
+        -1 & 1
+    \end{bmatrix}
+    d\xi
+    \begin{bmatrix}
+        d_1^1 \\
+        d_1^2
+    \end{bmatrix} + \\
+    +\sum_{e=2}^{n_{el}}
+    \begin{bmatrix}
+        c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{EA}{2h^e}
+    \begin{bmatrix}
+    1 & -1 \\
+    -1 & 1      
+    \end{bmatrix}d\xi
+    \begin{bmatrix}
+    d_e^1 \\
+    d_e^2
+    \end{bmatrix} = \\
+    =c_1^2\int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi +
+    \sum_{e=2}^{n_{el}}
+    \begin{bmatrix}
+        c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{fh^e}{4}
+    \begin{bmatrix}
+    1-\xi \\
+    1+\xi
+    \end{bmatrix}d\xi+\\
+    +
+    c^2_{n_{el}}tA(L).
+    \end{gathered}
+\end{equation}
+
+Для некоторых членов этого уравнения принято использовать специальные обозначения. Для элемента $\Omega^e$ вводятся "матрица жёсткости"\ элемента (element stiffness matrix):
+$$
+\boldsymbol{K^e_{local}}=
+\int_{\Omega^{\xi}}\frac{EA}{2h^e}
+    \begin{bmatrix}
+    1 & -1 \\
+    -1 & 1      
+    \end{bmatrix}d\xi
+$$
+и "вектор силы"\ элемента (element force vector):
+$$
+\boldsymbol{F^e_{local}}=
+\int_{\Omega^{\xi}}\frac{fh^e}{4}
+    \begin{bmatrix}
+    1-\xi \\
+    1+\xi
+    \end{bmatrix}d\xi.
+$$
+
+\subsection{Глобальные степени свободы}
+
+Введём в рассмотрение глобальные степени свободы $c_e, d_e$ - в отличии от использованных ранее локальных степеней свободы $(c_e^1, c_e^2), (d_e^1, d_e^2)$. Т.е. глобальная степень свободы жёстко привязана к номеру соответствующего узла в разбиении нашей области $\Omega$. Запишем, чему равны значения нашей искомой функции и весовой функции в узлах разбиения. Например,
+$$
+u^h(x^e)=\sum_{A=1}^2N^A(x^1_e)d^A_e=\delta_{A1}d^A_e=d^1_e=d_e,
+$$
+$$
+u^h(x^{e+1})=\sum_{A=1}^2N^A(x^2_e)d^A_e=\delta_{A2}d^A_e=d^2_e=d_{e+1}.
+$$
+
+Если же рассматривать точку $x^{e+1}$ как левый конец множетва $\Omega^{e+1}$, то получим равенство
+$$
+u^h(x^{e+1})=\sum_{A=1}^2N^A(x^1_{e+1})d^A_{e+1}=\delta_{A1}d^A_{e+1}=d^1_{e+1}=d_{e+1}.
+$$
+
+В целом, будут справедливы следующие равенства
+\begin{equation}
+    \begin{gathered}
+    d_e^A=d_{e+A-1}, \\
+    d^2_e=d^1_{e+1}, \\
+    c_e^A=c_{e+A-1}, \\
+    c^2_e=c^1_{e+1}.
+    \end{gathered}
+\end{equation}
+
+При переходе к глобальным степеням свободы основная система уравнений запишется в виде
+\begin{equation}
+    \begin{gathered}
+    \begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el+1}} 
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    -\int_{\Omega^1}\frac{EA}{2h^1}d\xi & \left(\int_{\Omega^1}\frac{EA}{2h^1}d\xi + \int_{\Omega^2}\frac{EA}{2h^2}d\xi\right) &
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi & \cdots \\ \\
+    0 & -\int_{\Omega^2}\frac{EA}{2h^2}d\xi &
+    \left(\int_{\Omega^2}\frac{EA}{2h^2}d\xi + \int_{\Omega^3}\frac{EA}{2h^3}d\xi\right) & \cdots \\ \\
+    \cdots & \cdots & \cdots & \cdots
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    d_1 \\
+    d_2 \\
+    \vdots \\
+    d_{n_{el+1}}
+    \end{bmatrix}= \\
+    =\begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el+1}} 
+    \end{bmatrix}
+    \begin{bmatrix}
+    \int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi + \int_{\Omega^2}\frac{fh^2}{4}(1-\xi)d\xi \\
+    \int_{\Omega^2}\frac{fh^2}{4}(1+\xi)d\xi + \int_{\Omega^3}\frac{fh^3}{4}(1-\xi)d\xi \\
+    \vdots \\
+    \int_{\Omega^{n_{el}}}\frac{fh^{n_{el}}}{4}(1+\xi)d\xi
+    \end{bmatrix} +\\
+    +
+    \begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el+1}} 
+    \end{bmatrix}
+    \begin{bmatrix}
+    0 \\
+    0 \\
+    \vdots \\
+    tA(L)
+    \end{bmatrix}
+    \end{gathered}
+\end{equation}.
+
+В записанном выше уравнении матрица имеет прямоугольный вид $n_{el+1} \times n_{el}$. Исключим из выражения переменную $d_1$, т.к. по постановке задачи $u(0)=u_0=d_1$. Тогда итоговая система уравнений примет вид
+
+\begin{equation}
+    \begin{gathered}
+    \begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el+1}} 
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    \left(\int_{\Omega^1}\frac{EA}{2h^1}d\xi + \int_{\Omega^2}\frac{EA}{2h^2}d\xi\right) &
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi & \cdots \\ \\
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi &
+    \left(\int_{\Omega^2}\frac{EA}{2h^2}d\xi + \int_{\Omega^3}\frac{EA}{2h^3}d\xi\right) & \cdots \\ \\
+    \cdots & \cdots & \int_{\Omega^{n_{el}}}\frac{EA}{2h^{n_{el}}}d\xi
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    d_2 \\
+    d_3 \\
+    \vdots \\
+    d_{n_{el+1}}
+    \end{bmatrix}= \\
+    =\begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el+1}} 
+    \end{bmatrix} \\
+    \left(
+    \begin{bmatrix}
+    \int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi + \int_{\Omega^2}\frac{fh^2}{4}(1-\xi)d\xi \\
+    \int_{\Omega^2}\frac{fh^2}{4}(1+\xi)d\xi + \int_{\Omega^3}\frac{fh^3}{4}(1-\xi)d\xi \\
+    \vdots \\
+    \int_{\Omega^{n_{el}}}\frac{fh^{n_{el}}}{4}(1+\xi)d\xi
+    \end{bmatrix} +
+    \begin{bmatrix}
+    0 \\
+    0 \\
+    \vdots \\
+    tA(L)
+    \end{bmatrix}+
+    \int_{\Omega^1}\frac{EA}{2h^1}d\xi
+    \begin{bmatrix}
+    u_0 \\
+    0 \\
+    0 \\
+    \vdots
+    \end{bmatrix}
+    \right)
+    \end{gathered}
+\end{equation}
+
+Вводя новые обозначения, данную систему уравнений можно записать в виде
+$$
+\boldsymbol{c^TKd=c^TF}.
+$$
+Согласно слабой постановке задачи данное выражение справедливо для $\forall\omega \Rightarrow \forall c$. Тогда справедливо выражение
+\begin{equation}
+    \label{eq:FEM}
+    \boldsymbol{Kd=F},
+\end{equation}
+где $\boldsymbol{K}$ - глобальная матрица жёсткости, $\boldsymbol{F}$ - глобальный вектор силы.
+
+Решение этой системы находится в виде
+\begin{equation}
+    \begin{gathered}
+    \label{eq:FEM_solution}
+    \boldsymbol{d=K^{-1}F}, \\
+    u^h_e = \sum_{A=1}^2N^A(x)d^A_e, \forall \Omega^{e}\subset\Omega.
+    \end{gathered}
+\end{equation}
+
+\subsection{Численное интегрирование}
+
+При составлении матрицы жёсткости и вектора силы при вычислении их элементов необходимо вычислять интегралы, включающие в себя зависимости $E(x)$, $A(x)$, базисные функции и их производные. В том случае, если эти зависимости имеют достаточно сложный вид, или используются базисные функции высоких порядков, аналитическое интегрирование может быть громоздким и сложновыполнимым. Рассмотрим здесь подход, позволяющий численно вычислять интегралы от полиномиальных выражений с гарантированной точностью. Этот подход носит название квадратуры Гаусса.
+
+Рассмотрим равенство
+$$
+\int_{-1}^{1}g(\xi)d\xi=\sum_{l=1}^{n_{int}}g(\xi_l)w_l,
+$$
+где $n_{int}$ - число точек интегрирования, $\xi_l$ - их координаты, $w_l$ - веса, связанные с соответствующими точками.
+Если потребовать, чтобы данное равенство было справедливо для всех постоянных функций, потом для всех полиномов первой степени, потом для всех полиномов второй степени и т.д., то можно получить систему уравнений на $\xi_l$ и $w_l$.
+
+Справедлива следующая теорема. Если в качестве точек интегрирования взять нули полиномов Лежандра, а в качестве весов - интегралы от интерполяционных полиномов Лагранжа, то данное тождество будет справедливо для всех полиномов, степень которых не превосходит $2n_{int} - 1$. В таблице ниже приведены параметры для нескольких значений $n_{int}$.
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+ \hline
+ $n_{int} = 1$ & $\xi_1 = 0$ & $w_1 = 2$ & $2n_{int}-1=1$ \\
+  \hline
+ $n_{int} = 2$ & $\xi_1 = -\frac{1}{\sqrt{3}}$ & $w_1 = 1$ & $2n_{int}-1=3$ \\
+ & $\xi_2 = \frac{1}{\sqrt{3}}$ & $w_1 = 1$ & \\
+  \hline
+ $n_{int} = 3$ & $\xi_1 = -\sqrt{\frac{3}{5}}$ & $w_1 = \frac{5}{9}$ & $2n_{int}-1=5$ \\
+ & $\xi_2 = 0$ & $w_1 = \frac{8}{9}$ &\\
+ & $\xi_3 = \sqrt{\frac{3}{5}}$ & $w_1 = \frac{5}{9}$ &\\
+ \hline
+\end{tabular}
+\end{center}
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Реализуйте на языке C++ функцию, вычисляющую интеграл от заданной функции с помощью квадратур Гаусса. В функцию должны передаваться два параметра - указатель на функцию $g(\xi)$ и $n_{int}$.
+  \item Реализуйте на языке C++ функцию, вычисляющую значения интерполяционных полиномов Лагранжа.
+  \item Реализуйте на языке C++ функцию, вычисляющую значения первой производной от интерполяционных полиномов Лагранжа.
+  \item Проверьте реализацию п.1, используя результаты из п.2 и п.3.
+\end{enumerate}
+
+\subsection{Однородный стержень. Задача Неймана}
+
+В случае, когда $f$, $E$ и $A$ не зависят от координаты $x$, и при разбиении множества $\Omega$ на равные интервалы, т.е. $\Omega^e=const$, матрицы $\boldsymbol{K}$ и $\boldsymbol{F}$ примут вид
+\begin{equation}
+    \begin{gathered}
+    \boldsymbol{K}=
+    \frac{EA}{h}
+    \begin{bmatrix}
+    2 & -1 & 0 & 0 & 0 & \cdots \\
+    -1 & 2 & -1 & 0 & 0 & \cdots \\
+    0 & -1 & 2 & -1 & 0 & \cdots \\
+    \vdots & \vdots & \vdots & \vdots & \vdots & 1
+    \end{bmatrix}, \\
+    \boldsymbol{F}=
+    \frac{fh}{2}
+    \begin{bmatrix}
+    2 \\
+    2 \\
+    2 \\
+    \vdots \\
+    1
+    \end{bmatrix}+
+    tA
+    \begin{bmatrix}
+    0 \\
+    0 \\
+    0 \\
+    \vdots \\
+    1
+    \end{bmatrix}+
+    \frac{EA}{h}
+     \begin{bmatrix}
+    u_0 \\
+    0 \\
+    0 \\
+    \vdots \\
+    0
+    \end{bmatrix}
+    \end{gathered}
+\end{equation}
+
+В этом случае аналитическое решение имеет вид
+$$
+\frac{d}{dx}(EA\frac{du}{dx}) + f = 0,
+$$
+$$
+\frac{d^2u}{dx^2} = -\frac{f}{EA},
+$$
+$$
+\frac{du}{dx} = -\frac{fx}{EA} + C_1,
+$$
+$$
+u(x) = -\frac{fx^2}{2EA} + C_1x + C_2.
+$$
+
+Используя условия $u(0)=u_0$ и $E\frac{du}{dx}(L)=t$, найдём значения констант
+$$C_2 = u_0,$$
+$$C_1 = \frac{At+fL}{EA}.$$
+Тогда решение примет вид
+$$
+u(x) = -\frac{fx^2}{2EA} + \frac{At+fL}{EA}x + u_0.
+$$
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Реализуйте на языке C++ функцию, вычисляющую аналитическое решение задачи об одномерном растяжении стержня с не зависящими от координаты параметрами. Постройте график смещения вдоль оси стержня.
+  \item Реализуйте на языке C++ программу, решающую предыдущую задачу методом конечных элементов. Сравните результаты расчётов с аналитическим решением. На сколько элементов достаточно разбить стержень, чтобы численное решение было близко к аналитическому решению?
+  \item Доработайте программу из п.2 для случая, когда все параметры задачи зависят от координаты вдоль оси стержня. Для численного интегрирования используйте квадратуры Гаусса. Какие ограничения необходимо ввести на зависимости, чтобы получить минимально возможную численную ошибку.
+\end{enumerate}
+
+\subsection{Второй вариант граничных условий}
+Ранее нами рассматривалась такая постановка задачи, когда на левом конце задано значение $u(0)=u_0$, а на правом конце задано $\sigma(L)=E\frac{du}{dx}\left(0\right)$. Рассмотрим вторую постановку задачи, когда на правом конце известно значение $u(L)=u_g$. Тогда в слабой форме задача может быть записана в следующем виде.
+
+Необходимо найти функцию $u^h(x) \in S^h\{u^h|u^h(0)=u_0,u^h(L)=u_g\}$, такую что $\forall \omega^h \in V^h\{v^h|v^h(0)=0,v^h(L)=0\}$ справедливо равенство
+\begin{equation}
+    \label{eq:weak_form_h1_dirchlet}
+    \int_0^L \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx=\int_0^L \omega^h fdx.
+\end{equation}
+
+Вспоминая вывод формул в локальных степенях свободы можем теперь дополнить его граничным условием $\omega^h(L)=0$:
+$$
+\omega^h_{n_{el}}(L)=N^1(L)c_{n_{el}}^1+N^2(L)c_{n_{el}}^2=c_{n_{el}}^2=0.
+$$
+
+С учётом граничных условий, и, выделяя явно члены, соответствующие интервалам $\Omega^1$ и $\Omega^{n_{el}}$ выражение (\ref{eq:weak_form_h1_dirchlet}) может быть записано в виде
+
+\begin{equation}
+    \begin{gathered}
+    c_1^2\int_{\Omega^1}\frac{EA}{2h^1}
+    \begin{bmatrix}
+        -1 & 1
+    \end{bmatrix}
+    d\xi
+    \begin{bmatrix}
+        d_1^1 \\
+        d_1^2
+    \end{bmatrix} +
+    \sum_{e=2}^{n_{el-1}}
+    \begin{bmatrix}
+        c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{EA}{2h^e}
+    \begin{bmatrix}
+    1 & -1 \\
+    -1 & 1      
+    \end{bmatrix}d\xi
+    \begin{bmatrix}
+    d_e^1 \\
+    d_e^2
+    \end{bmatrix} + \\
+     +c_{n_{el}}^1\int_{\Omega^{n_{el}}}\frac{EA}{2h^{n_{el}}}
+    \begin{bmatrix}
+        1 & -1
+    \end{bmatrix}
+    d\xi
+    \begin{bmatrix}
+        d_{n_{el}}^1 \\
+        d_{n_{el}}^2
+    \end{bmatrix} =\\
+    =c_1^2\int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi +
+    \sum_{e=2}^{n_{el-1}}
+    \begin{bmatrix}
+        c_e^1 & c_e^2
+    \end{bmatrix}
+    \int_{\Omega^{\xi}}\frac{fh^e}{4}
+    \begin{bmatrix}
+    1-\xi \\
+    1+\xi
+    \end{bmatrix}d\xi +\\
+    +c_{n_{el}}^1\int_{\Omega^{n_{el}}}\frac{fh^{n_{el}}}{4}(1-\xi)d\xi
+    \end{gathered}
+\end{equation}
+
+При переходе к глобальным степеням свободы система уравнений запишется в виде
+\begin{equation}
+    \begin{gathered}
+    \begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el}} 
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    -\int_{\Omega^1}\frac{EA}{2h^1}d\xi & \left(\int_{\Omega^1}\frac{EA}{2h^1}d\xi + \int_{\Omega^2}\frac{EA}{2h^2}d\xi\right) &
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi & \cdots \\ \\
+    0 & -\int_{\Omega^2}\frac{EA}{2h^2}d\xi &
+    \left(\int_{\Omega^2}\frac{EA}{2h^2}d\xi + \int_{\Omega^3}\frac{EA}{2h^3}d\xi\right) & \cdots \\ \\
+    \cdots & \cdots & \cdots & \cdots
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    d_1 \\
+    d_2 \\
+    \vdots \\
+    d_{n_{el+1}}
+    \end{bmatrix}= \\
+    =\begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el}} 
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    \int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi + \int_{\Omega^2}\frac{fh^2}{4}(1-\xi)d\xi \\
+    \int_{\Omega^2}\frac{fh^2}{4}(1+\xi)d\xi + \int_{\Omega^3}\frac{fh^3}{4}(1-\xi)d\xi \\
+    \vdots \\
+    \int_{\Omega^{n_{el-1}}}\frac{fh^{n_{el-1}}}{4}(1+\xi)d\xi+
+    \int_{\Omega^{n_{el}}}\frac{fh^{n_{el}}}{4}(1-\xi)d\xi
+    \end{bmatrix}.
+    \end{gathered}
+\end{equation}
+
+В записанном выше уравнении матрица имеет прямоугольный вид $n_{el+1} \times n_{el-1}$. Исключим из выражения переменную $d_1$, т.к. по постановке задачи $u(0)=u_0=d_1$ и $d_{n_{el+1}}$, т.к. по постановке задачи $u(L)=u_g=d_{n_{el+1}}$. Тогда итоговая система примет вид
+
+\begin{equation}
+    \begin{gathered}
+    \begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el}}
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    \left(\int_{\Omega^1}\frac{EA}{2h^1}d\xi + \int_{\Omega^2}\frac{EA}{2h^2}d\xi\right) &
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi & \cdots \\ \\
+    -\int_{\Omega^2}\frac{EA}{2h^2}d\xi &
+    \left(\int_{\Omega^2}\frac{EA}{2h^2}d\xi + \int_{\Omega^3}\frac{EA}{2h^3}d\xi\right) & \cdots \\ \\
+    \cdots & \cdots & \cdots
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    d_2 \\
+    d_3 \\
+    \vdots \\
+    d_{n_{el}}
+    \end{bmatrix}= \\
+    =\begin{bmatrix}
+    c_2 c_3 \cdots c_{n_{el}} 
+    \end{bmatrix} \\
+    \begin{bmatrix}
+    \int_{\Omega^1}\frac{fh^1}{4}(1+\xi)d\xi + \int_{\Omega^2}\frac{fh^2}{4}(1-\xi)d\xi \\
+    \int_{\Omega^2}\frac{fh^2}{4}(1+\xi)d\xi + \int_{\Omega^3}\frac{fh^3}{4}(1-\xi)d\xi \\
+    \vdots \\
+    \int_{\Omega^{n_{el-1}}}\frac{fh^{n_{el-1}}}{4}(1+\xi)d\xi+
+    \int_{\Omega^{n_{el}}}\frac{fh^{n_{el}}}{4}(1-\xi)d\xi
+    \end{bmatrix} + \\
+    +\int_{\Omega^1}\frac{EA}{2h^1}d\xi
+    \begin{bmatrix}
+    u_0 \\
+    0 \\
+    0 \\
+    \vdots
+    \end{bmatrix}+
+    \int_{\Omega^{n_{el}}}\frac{EA}{2h^{n_{el}}}d\xi
+    \begin{bmatrix}
+    0 \\
+    0 \\
+    \vdots \\
+    u_g
+    \end{bmatrix}.
+    \end{gathered}
+\end{equation}
+
+И итоговая система уравнений представляется в виде
+\begin{equation}
+    \boldsymbol{Kd=F},
+\end{equation}
+где $\boldsymbol{K}$ - глобальная матрица жёсткости, $\boldsymbol{F}$ - глобальный вектор силы.
+
+\subsection{Однородный стержень. Задача Дирихле}
+Пусть заданы значения $u(0)=u_0$ и $u(L)=u_g$. В случае, когда $f$, $E$ и $A$ не зависят от координаты $x$, и при разбиении множества $\Omega$ на равные интервалы, т.е. $\Omega^e=const$, матрицы $\boldsymbol{K}$ и $\boldsymbol{F}$ примут вид
+\begin{equation}
+    \begin{gathered}
+    \boldsymbol{K}=
+    \frac{EA}{h}
+    \begin{bmatrix}
+    2 & -1 & 0 & \cdots \\
+    -1 & 2 & -1 & \cdots \\
+    0 & -1 & 2 & \cdots \\
+    \vdots & \vdots & \vdots & 2
+    \end{bmatrix}, \\
+    \boldsymbol{F}=
+    \frac{fh}{2}
+    \begin{bmatrix}
+    2 \\
+    2 \\
+    2 \\
+    \vdots \\
+    2
+    \end{bmatrix}+
+    \frac{EA}{h}
+     \begin{bmatrix}
+    u_0 \\
+    0 \\
+    0 \\
+    \vdots \\
+    0
+    \end{bmatrix}+
+    \frac{EA}{h}
+     \begin{bmatrix}
+    0 \\
+    0 \\
+    0 \\
+    \vdots \\
+    u_g
+    \end{bmatrix}.
+    \end{gathered}
+\end{equation}
+
+В этом случае также может быть найдено аналитическое решение
+
+$$
+u(x) = -\frac{fx^2}{2EA} + C_1x + C_2.
+$$
+
+Используя условия $u(0)=u_0$ и $u(L)=u_g$, найдём значения констант
+$$C_2 = u_0,$$
+$$C_1 = \frac{u_g-u_0+\frac{fL^2}{2EA}}{L}.$$
+Тогда аналитическое решение примет вид
+$$
+u(x) = -\frac{fx^2}{2EA} + \frac{u_g-u_0+\frac{fL^2}{2EA}}{L}x + u_0.
+$$
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Реализуйте на языке C++ функцию, вычисляющую аналитическое решение задачи об одномерном растяжении стержня с не зависящими от координаты параметрами для условий Дирихле. Постройте график смещения вдоль оси стержня.
+  \item Реализуйте на языке C++ программу, решающую предыдущую задачу методом конечных элементов. Сравните результаты расчётов с аналитическим решением. На сколько элементов достаточно разбить стержень, чтобы численное решение было близко к аналитическому решению?
+  \item Доработайте программу из п.2 для случая, когда все параметры задачи зависят от координаты вдоль оси стержня. Для численного интегрирования используйте квадратуры Гаусса.
+\end{enumerate}
+
+\subsection{Квадратичные базисные функции}
+
+Ранее при выводе формул МКЭ мы для аппроксимации решения внутри отдельно взятого элемента $\Omega^e$ использовали базисные функции первого порядка. Для того, чтобы поднять точность численного решения можно использовать базисные функции более высокого порядка. Пусть у нас элемент $\Omega^e$ содержит $N_{n_e}$ узлов. Тогда в нём можно построить полиномы Лагранжа
+$$
+N^A(x)=\frac{\prod\limits_{B=1, B\neq A}^{N_{n_e}}(x-x^B)}{\prod\limits_{B=1, B\neq A}^{N_{n_e}}(x^A-x^B)},
+$$
+которые и будут являться базисными функциями для восстановления решения внутри элемента.
+
+Пусть $N_{n_e} = 3$. Как и ранее, удобнее рассматривать задачу на элементе $\Omega^{\xi}$. Пронумеруем узлы в нём слева направо $\xi^1=-1, \xi^2=0, \xi^3=1$. Тогда получим три квадратичные базисные функции:
+
+\begin{equation}
+    \begin{gathered}
+    N^1(\xi) = \frac{\xi(\xi - 1)}{2}, \\
+    N^2(\xi) = 1-\xi^2, \\
+    N^3(\xi) = \frac{\xi(1+\xi)}{2}.
+    \end{gathered}
+\end{equation}
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Покажите, что определённые таким способом базовые функциии обладают свойством символа Кронекера (отличны от нуля во всех узлах, кроме одного).
+  \item Покажите, что справедливо тождество $\sum_A N^A(x) = 1$.
+ \end{enumerate}
+ 
+ Проведём вывод формул МКЭ, получающихся при использовании квадратичных базисных функций. Для определённости будем использовать постановку задачи (\ref{eq:weak_form_h1}, \ref{eq:weak_form_fem}):
+
+\begin{equation}
+    \sum_{e=1}^{n_{el}}\int_{\Omega^e} \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx=\sum_{e=1}^{n_{el}}\int_{\Omega^e} \omega^h fdx + \omega^h(L)tA(L).
+\end{equation}
+
+Будем, как и ранее, использовать аппроксимацию $x_e(\xi)=\sum_{A=1}^3N^A(\xi)x_e^A$. В дальнейших рассуждениях нам потребуется величина $\frac{d\xi}{dx}=\left(\frac{dx}{d\xi}\right)^{-1}$. Она может быть вычислена как
+
+\begin{equation}
+    \begin{gathered}
+    \frac{dx}{d\xi}=\sum_{A=1}^3\frac{dN^A(\xi)}{d\xi}x_e^A=\frac{2\xi-1}{2}x_e^1-2\xi x_e^2+\frac{2\xi+1}{2}x_e^3= \\
+    =\frac{x_e^3-x_e^1}{2}+\xi(x_e^1-2x_e^2+x_e^3)=\frac{x_e^3-x_e^1}{2}=\frac{h_e}{2},
+    \end{gathered}
+\end{equation}
+т.к. по определению $x_e^2$ выбрана точно в середине элемента $\Omega^e$. Таким образом, эта связь такая же, как была в случая линейных базисных функций.
+Рассмотрим интегралы на произвольном элементе $\Omega^e$
+
+\begin{equation}
+    \begin{gathered}
+        I_1^e=\int_{\Omega^e} \frac{d \omega^h}{dx}EA\frac{du^h}{dx}dx= \\
+        =\int_{\Omega^e}\left(\sum_{A=1}^3\frac{dN^A(\xi)}{d\xi}\frac{2}{h^e}c_e^A\right)EA\left(\sum_{B=1}^2\frac{dN^B(\xi)}{d\xi}\frac{2}{h^e}d_e^B\right)\frac{dx}{d\xi}d\xi= \\
+         =\sum_{A,B=1}^3c_e^A\left(\int_{\Omega^{\xi}}\frac{dN^A(\xi)}{d\xi}\frac{2EA}{h^e}\frac{dN^B(\xi)}{d\xi}d\xi\right)d_e^B .
+    \end{gathered}
+\end{equation}
+
+В матричном виде это равенство записывается
+
+\begin{equation}
+    I_1^e=\begin{bmatrix}
+        c_e^1 & c_e^2 & c_e^2
+        \end{bmatrix}
+        \int_{\Omega^{\xi}}\frac{2EA}{h^e}
+        \begin{bmatrix}
+        N^1_{,\xi}N^1_{,\xi} & N^1_{,\xi}N^2_{,\xi} & N^1_{,\xi}N^3_{,\xi} \\
+        N^2_{,\xi}N^1_{,\xi} & N^2_{,\xi}N^2_{,\xi} & N^2_{,\xi}N^3_{,\xi} \\
+        N^3_{,\xi}N^1_{,\xi} & N^3_{,\xi}N^2_{,\xi} & N^3_{,\xi}N^3_{,\xi}
+        \end{bmatrix}d\xi
+        \begin{bmatrix}
+        d_e^1 \\
+        d_e^2 \\
+        d_e^3
+        \end{bmatrix},
+\end{equation}
+
+причём
+\begin{equation}
+        \begin{bmatrix}
+        N^1_{,\xi}N^1_{,\xi} & N^1_{,\xi}N^2_{,\xi} & N^1_{,\xi}N^3_{,\xi} \\
+        N^2_{,\xi}N^1_{,\xi} & N^2_{,\xi}N^2_{,\xi} & N^2_{,\xi}N^3_{,\xi} \\
+        N^3_{,\xi}N^1_{,\xi} & N^3_{,\xi}N^2_{,\xi} & N^3_{,\xi}N^3_{,\xi}
+        \end{bmatrix} =
+        \frac{1}{4}
+        \begin{bmatrix}
+        (2\xi-1)^2 & -4\xi(2\xi-1) & (2\xi-1)(2\xi+1)\\
+        \cdots & 16\xi^2 & -4\xi(2\xi+1)\\
+        \cdots & \cdots & (2\xi+1)^2
+        \end{bmatrix}
+\end{equation}
+
+Аналогично,
+\begin{equation}
+    I_2^e=\begin{bmatrix}
+        c_e^1 & c_e^2 & c_e^3
+        \end{bmatrix}
+        \int_{\Omega^{\xi}}\frac{fh^e}{2}
+        \begin{bmatrix}
+        N^1 \\
+        N^2 \\
+        N^3
+        \end{bmatrix}d\xi,
+\end{equation}
+
+причём
+\begin{equation}
+    \begin{bmatrix}
+    N^1 \\
+    N^2 \\
+    N^3
+    \end{bmatrix} =
+    \frac{1}{2}
+    \begin{bmatrix}
+    \xi(\xi-1) \\
+    2(1-\xi^2) \\
+    \xi(1+\xi)
+    \end{bmatrix}
+\end{equation}
+
+В случае, когда $f$, $E$ и $A$ не зависят от координаты $x$, соответствующие матрицы примут вид
+
+\begin{equation}
+\begin{gathered}
+    \boldsymbol{K^e_{local}}=\frac{EA}{3h^e}
+    \begin{bmatrix}
+        7 & -8 & 1 \\
+        -8 & 16 & -8 \\
+        1 & -8 & 7
+    \end{bmatrix}, \\
+    \boldsymbol{F^e_{local}}=
+    \frac{fh^e}{6}
+    \begin{bmatrix}
+    1 \\
+    4 \\
+    1
+    \end{bmatrix}.
+\end{gathered}
+\end{equation}
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Запишите в общем виде глобальную матрицу жёсткости и вектор силы для случая квадратичных базисных функций.
+  \item Запишите матрицы из п.1 для случая, когда $f$, $E$ и $A$ не зависят от координаты $x$.
+  \item Проделайте все выкладки в п.1 и п.2 для случая, когда на обоих концах стержня заданы условия Дирихле.
+  \item Реализуйте на языке C++ программу (см. п.2), решающую упругую задачу с квадратичными базисными функциями. Рассмотрите случай условий Неймана и Дирихле. Сравните результаты расчётов с аналитическим решением.
+  \item Доработайте программу из п.4 для случая, когда все параметры задачи зависят от координаты вдоль оси стержня. Для численного интегрирования используйте квадратуры Гаусса.
+\end{enumerate}
+
+\clearpage

@@ -16,24 +16,24 @@ typedef float real_t;
 	{ if (x == NULL) cout << "Error connected with malloc call" << endl; }
 
 // 2D parameters
-#define NX 501
-#define NY 1
-#define NZ 51
-#define NT 401
+//#define NX 501
+//#define NY 1
+//#define NZ 51
+//#define NT 401
 
 // 3D parameters
-//#define NX 201
-//#define NY 201
-//#define NZ 51
-//#define NT 2001
+#define NX 21
+#define NY 21
+#define NZ 51
+#define NT 2001
 #define dim 3 // 3D data collected (now true for 2D tests too)
 #define comp 2 // 0 = VX, 1 = VY, 2 = VZ
 
 using namespace std;
 
 int D = 0;
-real_t h = 20.0f; // 2D test
-//real_t h = 50.0f; // 3D test
+//real_t h = 20.0f; // 2D test
+real_t h = 500.0f; // 3D test
 
 string make_vtk_header(
 	const char *label,
@@ -74,15 +74,15 @@ float read_float(ifstream &i_stm) {
 }
 
 void read_data(real_t *input_data) {
-	//ifstream file("./modelc_3D_50_d.bin"); // 3D test
-	ifstream file("./modelc_full_20_10.bin"); // 2D test
+	ifstream file("./modelc_3D_500_d.bin"); // 3D test
+	//ifstream file("./modelc_full_20_10.bin"); // 2D test
 	file.read((char *)input_data, dim * NX * NY * NT * sizeof(real_t));
 	file.close();
 }
 
 void save_input(real_t *input_data) {
-	//ofstream file("./modelc_3D_50_d_input.vtk"); // 3D test
-	ofstream file("./modelc_full_20_10_input.vtk"); // 2D test
+	ofstream file("./modelc_3D_500_d_input.vtk"); // 3D test
+	//ofstream file("./modelc_full_20_10_input.vtk"); // 2D test
 	file << make_vtk_header(
 		"Elastic Seismogram",
 		NX, NY, NT,
@@ -91,17 +91,18 @@ void save_input(real_t *input_data) {
 		NX * NY * NT);
 	file << "SCALARS I float 1 \n";
 	file << "LOOKUP_TABLE I_table \n";
-	for (int i = 0; i < NT; i++)
-		for (int j = 0; j < NX; j++) {
-			int ind = comp * (NX * NT) + j * NT + i;
+	for (int k = 0; k < NT; k++)
+		for (int j = 0; j < NY; j++)
+			for (int i = 0; i < NX; i++) {
+			int ind = comp * (NX * NY * NT) + i * NY * NT + j * NT + k;
 			write_float(file, input_data[ind]);
 		}
 	file.close();
 }
 
 void save_model(real_t *data) {
-	//ofstream file("./modelc_3D_50_d.vtk"); // 3D test
-	ofstream file("./modelc_full_20_10.vtk"); // 2D test
+	ofstream file("./modelc_3D_500_d.vtk"); // 3D test
+	//ofstream file("./modelc_full_20_10.vtk"); // 2D test
 	file << make_vtk_header(
 		"Migration Image",
 		NX, NY, NZ,
@@ -122,8 +123,8 @@ void save_model(real_t *data) {
 }
 
 void process_local_data(real_t *input_data, real_t *local_data, int rank) {
-	real_t tay = 0.01f; // 2D test
-	//real_t tay = 0.002f; // 3D test
+	//real_t tay = 0.01f; // 2D test
+	real_t tay = 0.002f; // 3D test
 	real_t cP = 2500.0f / 2.0f;
 	real_t cS = 1250.0f / 2.0f;
 	real_t div0 = h / 2.0f;

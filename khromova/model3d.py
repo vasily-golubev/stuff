@@ -6,8 +6,7 @@ import scipy.interpolate as sc_ip
 import struct
 
 # constants
-sources = ['Area_1_J2_1',
-	'Area_1_A3_2',
+sources = ['Area_1_A3_2',
 	'Area_1_Aan_3',
 	'Area_1_Ahr_4',
 	'Area_1_Acb_5',
@@ -26,7 +25,7 @@ y_max = 7626700
 # common stuff
 nx = 601
 ny = 601
-nz = 421
+nz = 309
 xi = np.linspace(x_min, x_max, nx)
 yi = np.linspace(y_min, y_max, ny)
 
@@ -51,19 +50,24 @@ for source in sources:
 		print "Interpolated" # Progress ...
 		h = zi
 
-		if source == 'Area_1_J2_1': # Day surface case
-			h_prev = np.zeros(h.shape)
+		if source == 'Area_1_A3_2': # Day surface case
+			h_prev = -560.0 * np.ones(h.shape)
 			borders.append(h_prev)
 	if source == 'Bottom': # Bottom surface
 		h =  -2100.0 * np.ones(h.shape)
+	# Add water
+	#if source == 'Area_1_J2_1':
+	#	h = -560.0 * np.ones(h.shape)
+	if source == 'Area_1_A3_2':
+		h = -630.0 * np.ones(h.shape)
 	borders.append(h)
 
 	# create mesh
 	NX = nx
 	NY = ny
-	if source == 'Area_1_J2_1':
-		NZ = 120
-	elif source == 'Area_1_A3_2':
+	#if source == 'Area_1_J2_1':
+	#	NZ = 120
+	if source == 'Area_1_A3_2':
 		NZ = 20
 	elif source == 'Area_1_Aan_3':
 		NZ = 60
@@ -77,8 +81,8 @@ for source in sources:
 		NZ = 20
 	elif source == 'Bottom':
 		NZ = 65
-	else:
-		print "INCORRECT LAYER NAME!"
+	#else:
+	#	print "INCORRECT LAYER NAME!"
 	coords = np.zeros((NX, NY, NZ), dtype = ('float64', 3))
 	for i in range(NX):
 		for j in range(NY):
@@ -89,22 +93,22 @@ for source in sources:
 				coords[i, j, k][0] = xi[i] - x_min
 				coords[i, j, k][1] = yi[j] - y_min
 				coords[i, j, k][2] = zi[k]
-	f = open('./3dgrids/' + source + '.vtk', "wb")
-	# header
-	f.write('# vtk DataFile Version 3.0\n')
-	f.write('3dmodel\n')
-	f.write('BINARY\n')
-	f.write('DATASET STRUCTURED_GRID\n')
-	f.write('DIMENSIONS ' + str(NX) + ' ' + str(NY) + ' ' + str(NZ) + '\n')
-	f.write('POINTS ' + str(NX * NY * NZ) + ' float\n')
-	for k in range(NZ):
-		for j in range(NY):
-			for i in range(NX):
-				f.write(struct.pack('>f', coords[i, j, k][0]))
-				f.write(struct.pack('>f', coords[i, j, k][1]))
-				f.write(struct.pack('>f', coords[i, j, k][2]))
-	f.write('POINT_DATA ' + str(NX * NY * NZ) + '\n')
-	f.close()
+#	f = open('./3dgrids/' + source + '.vtk', "wb")
+#	# header
+#	f.write('# vtk DataFile Version 3.0\n')
+#	f.write('3dmodel\n')
+#	f.write('BINARY\n')
+#	f.write('DATASET STRUCTURED_GRID\n')
+#	f.write('DIMENSIONS ' + str(NX) + ' ' + str(NY) + ' ' + str(NZ) + '\n')
+#	f.write('POINTS ' + str(NX * NY * NZ) + ' float\n')
+#	for k in range(NZ):
+#		for j in range(NY):
+#			for i in range(NX):
+#				f.write(struct.pack('>f', coords[i, j, k][0]))
+#				f.write(struct.pack('>f', coords[i, j, k][1]))
+#				f.write(struct.pack('>f', coords[i, j, k][2]))
+#	f.write('POINT_DATA ' + str(NX * NY * NZ) + '\n')
+#	f.close()
 
 	h_prev = h
 
