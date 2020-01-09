@@ -1,0 +1,73 @@
+\section{—татическа€ двумерна€ задача теплопроводности}
+
+\subsection{—ильна€ постановка (strong form)}
+
+–ассмотрим задачу о пространственном распределении (в установившемс€ режиме) температуры в заданной двумерной области пространства. ћатематически она может быть записана следующим образом (см. рис. \ref{model}).
+Ќайти распределение температуры $T\left(\mathbf{x}=\begin{bmatrix}
+           x_{1} \\
+           x_{2}
+         \end{bmatrix}\right)$ в двумерной области $\Omega$, такое что:
+\begin{equation}
+\label{eq:strong_form}
+\begin{gathered}
+    q_{n,n}=s,\quad \textbf{x}\in\Omega\\
+    q_i=-\kappa_{ij} T_{,j}=-\sum\limits_{j=1}^2
+    \kappa_{ij}\frac{\partial T}{\partial x_j},\quad i=1,2
+\end{gathered}
+\end{equation}
+где $s(\mathbf{x})$ - внутренние источники тепла, $\mathbf{q}$ - вектор потока вытекающего тепла, $\kappa_{ij}$ - тензор теплопроводности, который должен быть положительно определенным, т.к. поток тепла возможен лишь от более нагретого к менее нагретому телу.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\linewidth]{Pictures/model.png}
+\caption{ќбласть $\Omega$ и координатные орты $e_1$ и $e_2$}
+\label{model}
+\end{figure}
+
+ƒл€ того, чтобы доопределить задачу, на границе рассматриваемой области $\partial\Omega$ должны быть заданы дополнительные услови€:
+
+$T(\textbf{x}) = T_g(\textbf{x}),\quad \textbf{x}\in \partial \Omega_T$
+- граничное условие ƒирихле;
+
+$\mathbf{q}\cdot\mathbf{n}=q_n,\quad \textbf{x}\in\Omega_q$
+- граничное условие Ќеймана.
+
+ќтметим, что здесь $\mathbf{n}$ - внешн€€ нормаль к области $\Omega$, а границы $\partial \Omega_T$ и $\partial \Omega_q$ удовлетвор€ют следующим услови€м:
+
+\begin{equation*}
+    \begin{gathered}
+        \partial\Omega_T\cup\partial\Omega_q=\partial\Omega,\\
+        \partial\Omega_T\cap\partial\Omega_q=\emptyset.
+    \end{gathered}
+\end{equation*}
+
+\textbf{ѕрактическое задание}
+\begin{enumerate}
+  \item  ак будет выгл€деть уравнение (\ref{eq:strong_form}), если $\kappa_{ij}=\kappa_0\delta_{ij}$.
+  \item ћожет ли уравнение (\ref{eq:strong_form}) иметь бесконечное множество решений?  акие граничные услови€ должны быть дл€ этого заданы на границе $\partial\Omega$?
+  \item ¬спомните закон ‘урье. ƒл€ какого случа€ он справедлив?
+  \item  ак будет выгл€деть уравнение (\ref{eq:strong_form}) в одномерном случае? ћожете ли вы решить его в квадратурах?
+\end{enumerate}
+
+\subsection{—лаба€ постановка (weak form)}
+
+¬ общем случае, может быть записано следующее интегральное уравнение, называющеес€ "слабой формой"\ (weak form). Ќайти функцию 
+$T(\mathbf{x})\in S\{T| T(\mathbf{x})=T_g(\mathbf{x}), \mathbf{x}\in\partial\Omega_T\}$, такую что $\forall\omega\in V\{\omega | \omega(\mathbf{x})=0,\mathbf{x}\in\partial\Omega_T\}$ справедливо:
+\begin{equation}
+\label{eq:weak_form}
+    \int_{\Omega}\omega_{,i}q_id\Omega =
+    - \int_{\Omega}\omega sd\Omega +
+    \int_{\partial\Omega_q}\omega q_nd\Gamma
+\end{equation}
+\begin{equation*}
+    \begin{gathered}
+        q_i=-\kappa_{ij}T_{,j}\\
+        \omega_{,i}q_i=\sum\limits_{i=1}^2(\frac{\partial\omega}{\partial x_i}q_i)=-\sum\limits_{i,j=1}^2(\frac{\partial\omega}{\partial x_i}\kappa_{ij}\frac{\partial T}{\partial x_j})\\
+    \end{gathered}
+\end{equation*}
+
+\textbf{ѕрактическое задание}
+
+ѕокажите эквивалентность дифференциального уравнени€ (\ref{eq:strong_form}) и интегрального уравнени€ (\ref{eq:weak_form}).
+
+\clearpage

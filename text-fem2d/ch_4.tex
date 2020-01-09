@@ -1,0 +1,132 @@
+\section{Аналитические решения}
+
+В случае, если тензор теплопроводности изотропен и не зависит от координаты, т.е. $\kappa_{ij}=\kappa_0\delta_{ij}$, исходное дифферециальное уравнение принимает вид
+\begin{equation}
+\label{a_1}
+    \kappa_0\left(T_{xx}+T_{yy}\right)=-s.
+\end{equation}
+
+\subsection{Однородная задача}
+
+Рассмотрим однородное уравнение ($s=0$) и для упрощения выкладок положим $\kappa=1$. Пусть область интереса представляет собой квадрат со стороной $2$. Дополняя уравнение (\ref{a_1}) граничными условиями Дирихле, получим дифференциальную задачу
+\begin{equation}
+\label{a_2}
+    \begin{gathered}
+        T_{xx}+T_{yy}=0,\\
+        T(0,y)=0,\\
+        T(2,y)=0,\\
+        T(x,0)=0,\\
+        T(x,2)=\sin{\frac{\pi x}{2}}.
+    \end{gathered}
+\end{equation}
+
+Будем искать решение данного уравнения, используя метод разделения переменных. Пусть $T(x,y)=U(x)V(y)$. Тогда получим уравнение
+\begin{equation}
+    \begin{gathered}
+        U_{xx}(x)V(y)+U(x)V_{yy}(y)=0,\\
+        \frac{U_{xx}(x)}{U(x)}=-\frac{V_{yy}(y)}{V(y)}.
+    \end{gathered}
+\end{equation}
+
+Посколькую разные части равенства зависят от разных переменных, каждая из них должна быть равна некоторой константе. Введём константу $\lambda$, такую что
+\begin{equation}
+\label{a_3}
+    \frac{U_{xx}(x)}{U(x)}=-\lambda.
+\end{equation}
+
+Задача Штурма-Лиувилля для уравнения (\ref{a_3}) с нулевыми граничными условиями имеет известное решение
+\begin{equation}
+    \begin{gathered}
+       \lambda_n=\left(\frac{\pi n}{2}\right)^2,\\
+        U_n(x)=\sin{\frac{\pi nx}{2}}.
+    \end{gathered}
+\end{equation}
+
+В таком случае второе уравнение на $V(y)$ принимает вид
+\begin{equation}
+    \frac{V_{yy}(y)}{V(y)}=\lambda_n=\left(\frac{\pi n}{2}\right)^2.
+\end{equation}
+
+Его общее решение имеет вид
+\begin{equation}
+    V_n(y)=\alpha_n\cosh{\frac{\pi ny}{2}}+\beta_n\sinh{\frac{\pi ny}{2}}.
+\end{equation}
+
+Следовательно, общее решение уравнения (\ref{a_2}), пока без удовлетворения граничных условий, может быть записано в виде суммы бесконечного ряда
+\begin{equation}
+\begin{gathered}
+    T(x,y)=\sum\limits_{n=1}^{\infty}U_n(x)V_n(y)=\\
+    =\sum\limits_{n=1}^{\infty}\left(\alpha_n\cosh{\frac{\pi ny}{2}}+\beta_n\sinh{\frac{\pi ny}{2}}\right)\sin{\frac{\pi nx}{2}}.
+    \end{gathered}
+\end{equation}
+
+Найдём константы $\alpha_n$ и $\beta_n$ из граничных условий
+\begin{equation}
+    \begin{gathered}
+        T(x,0)=\sum\limits_{n=1}^{\infty}\left(\alpha_n\cosh{\at{\frac{\pi ny}{2}}{y=0}}+\beta_n\sinh{\at{\frac{\pi ny}{2}}{y=0}}\right)\sin{\frac{\pi nx}{2}}=,\\
+        =\sum\limits_{n=1}^{\infty}\alpha_n\sin{\frac{\pi nx}{2}}=0,\\
+        \alpha_n=0, \forall n,\\
+        T(x,2)=\sum\limits_{n=1}^{\infty}\left(\alpha_n\cosh{\at{\frac{\pi ny}{2}}{y=2}}+\beta_n\sinh{\at{\frac{\pi ny}{2}}{y=2}}\right)\sin{\frac{\pi nx}{2}}=\\
+        =\sum\limits_{n=1}^{\infty}\beta_n\sinh{\left(\pi n\right)}\sin{\frac{\pi nx}{2}}=\sin{\frac{\pi x}{2}},\\
+        \beta_1=\frac{1}{\sinh{\pi}},\\
+        \beta_n=0,\forall n>1.
+    \end{gathered}
+\end{equation}
+
+Таким образом, решением уравнения (\ref{a_2}) является следующее распределение температуры в квадратной области
+\begin{equation}
+    T(x,y)=\frac{1}{\sinh{\pi}}\sinh{\frac{\pi y}{2}}\sin{\frac{\pi x}{2}}.
+\end{equation}
+
+Его вид в черно-белой шкале представлен на рисунке \ref{ris_1}:
+
+\begin{figure}[H]
+\includegraphics[width=80mm]{Pictures/analytical_dirichlet.pdf}
+\includegraphics[width=9mm]{Pictures/scale.pdf}
+\caption{Распределение температуры при отсутствии источника тепла}
+\label{ris_1}
+\end{figure}
+
+\textbf{Практическое задание}
+
+Реализуйте вычислительный алгоритм МКЭ, решающий однородную задачу теплопроводности, рассмотренную в данном разделе. Верифицируйте его на аналитическом решении. Сколько элементов достаточно использовать, чтобы получить приемлемое совпадение?
+
+\subsection{Неоднородная задача}
+
+Рассмотрим теперь неоднородное уравнение, полагая также $\kappa=1$. Пусть внутренний источник тепла задаётся формулой $s=\frac{\pi^2}{2}\sin{\frac{\pi x}{2}}\sin{\frac{\pi y}{2}}$. Представим полное решение неоднородного уравнения в виде суммы решения однородного уравнения $T_h$ и некоторого частного решения неоднородного уравнения $T_p$, т.ч. $T=T_h + T_p$. Подставляя это выражение в исходное уравнение (\ref{a_1}), в силу линейности получим
+\begin{equation}
+    \frac{\partial^{2} T_h}{\partial x^{2}}+\frac{\partial^{2} T_h}{\partial y^{2}}+\frac{\partial^{2} T_p}{\partial x^{2}}+\frac{\partial^{2} T_p}{\partial y^{2}}=-\frac{\pi^2}{2}\sin{\frac{\pi x}{2}}\sin{\frac{\pi y}{2}}.
+\end{equation}
+Учитывая, что $T_h$ является решением однородного уравнения, т.е. $$\frac{\partial^{2} T_h}{\partial x^{2}}+\frac{\partial^{2} T_h}{\partial y^{2}}=0,$$
+получаем
+\begin{equation}
+\label{a_4}
+    \frac{\partial^{2} T_p}{\partial x^{2}}+\frac{\partial^{2} T_p}{\partial y^{2}}=-\frac{\pi^2}{2}\sin{\frac{\pi x}{2}}\sin{\frac{\pi y}{2}}.
+\end{equation}
+
+Будем искать решение $T_p$ в виде $T_p=\alpha \sin{\frac{\pi x}{2}}\sin{\frac{\pi y}{2}}$, где $\alpha$ - константа. Заметим, что на границах области $T_p=0$, т.е. любое решение $T_p$ в таком виде не вносит вклад в граничные условия для (\ref{a_1}).
+Прямая подстановка в уравнение (\ref{a_4}) даёт значение константы $\alpha=1$.
+
+Таким образом, общее решение рассматриваемого неоднородного уравнения записывается в виде:
+\begin{equation}
+    T(x,y)=\frac{1}{\sinh{\pi}}\sinh{\frac{\pi y}{2}}\sin{\frac{\pi x}{2}}+\sin{\frac{\pi x}{2}}\sin{\frac{\pi y}{2}}.
+\end{equation}
+
+Его вид в черно-белой шкале представлен на рисунке \ref{ris_2}:
+
+\begin{figure}[H]
+\includegraphics[width=80mm]{Pictures/analytical_dirichlet_right_side.pdf}
+\includegraphics[width=10mm]{Pictures/scale_right_side.pdf}
+\caption{Распределение температуры при наличии источника тепла}
+\label{ris_2}
+\end{figure}
+
+\textbf{Практическое задание}
+
+Доработайте вычислительный алгоритм из предыдущего раздела так, чтобы он решал неоднородную задачу теплопроводности, рассмотренную в данном разделе. Верифицируйте его на аналитическом решении. Сколько элементов достаточно использовать, чтобы получить приемлемое совпадение?
+
+\subsection{Задача повышенной сложности}
+
+Мы рассмотрели построение МКЭ для простеших элементов - прямоугольников, ориентированных вдоль координатных осей. Однако, проделав соответствующие выкладки, можно получить аналоги выведенных формул для произвольных выпуклых четырёхугольников.
+
+Используя книгу \textbf{A First Course in Finite Elements, J. Fish and T. Belytschko, Wiley, 2007}, получить формулы для вычисления локальных матриц задачи, выполнить сборку из них глобальных матриц и написать программу, реализующую расчёт рассмотренных ранее однородной и неоднородной задач для однородной и изотропной среды. Провести её верификацию на аналитических решениях.

@@ -1,0 +1,486 @@
+\section{Метод конечных элементов}
+
+Найти функцию $T^h(\mathbf{x})\in 
+S^h\{T^h\in H^1(\Omega)| T^h(\mathbf{x})=T_g(\mathbf{x}),
+\mathbf{x}\in\partial\Omega_T\}\subset S$, такую что $\forall\omega^h\in 
+V^h\{\omega^h\in H^1(\Omega)|\omega^h(\mathbf{x})=0,\mathbf{x}\in\partial\Omega_T\}\subset V$:
+\begin{equation}
+\label{eq:h1_weak_form}
+    \int_{\Omega} \omega^h_{,i} q_i^hd\Omega=
+    -\int_{\Omega}\omega^hsd\Omega +
+    \int_{\partial\Omega_q}\omega^h q_nd\Gamma 
+\end{equation}     
+\begin{equation*}
+    q_i^h=-\kappa_{ij}T_{,j}^h
+\end{equation*}
+
+\subsection{Локальные степени свободы}
+
+Выведем расчётные формулы для метода конечных элементов. Разобьем область $\Omega$ на \textbf{прямоугольные} подобласти $\Omega^1,\Omega^2,...,\Omega^{n_{el}}$. При этом справедливо
+$\overline{\Omega}=\overline{\bigcup\limits_{e=1}^{n_{el}}\Omega^e}$.
+Интеграл по области $\Omega$ можно записать как сумму интегралов по областям $\Omega^e$. Преобразуем уравнение (\ref{eq:h1_weak_form}):
+\begin{equation}
+\label{eq:weak_form_fem}
+    \sum_{e=1}^{n_{el}}
+    \int_{\Omega_e}\omega_{,i}^h q_i^hd\Omega
+    =
+    - \sum_{e=1}^{n_{el}}\int_{\Omega^e}\omega^h sd\Omega +
+    \sum\limits_{e\in\epsilon_N}\int_{\partial\Omega_q^e}\omega^h q_nd\Gamma,
+\end{equation}
+где $\epsilon_N$ - множество элементов, чьи границы являются частью $\partial\Omega_q$.
+
+Сосредоточимся на рассмотрении одного выделенного элемента $\Omega^e$. Отобразим его непрерывно на квадратную область $\Omega^{\xi}$ (см. рис. \ref{projection}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\linewidth]{Pictures/projection.png}
+\caption{Элемент $\Omega^e$ и его образ $\Omega^{\xi}$}
+\label{projection}
+\end{figure}
+
+Введём на ней локальную систему координат и перенумеруем вершины так, как показано на рис. \ref{omega_xi}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{Pictures/omega_xi.png}
+\caption{Образ $\Omega^{\xi}$ и локальная нумерация узлов элемента}
+\label{omega_xi}
+\end{figure}
+
+Введём в рассмотрение базисные функции $N^i(\xi_1,\xi_2)$, обладающие свойством символа Кронекера: 
+$N^A(\xi_1^B,\xi_2^B)=\delta^{AB}$. Они имеют вид:\\
+\begin{equation*}
+    \begin{gathered}
+        N^1(\xi_1,\xi_2)=\frac{1}{4}(1-\xi_1)(1-\xi_2),\\
+        N^2(\xi_1,\xi_2)=\frac{1}{4}(1+\xi_1)(1-\xi_2),\\
+        N^3(\xi_1,\xi_2)=\frac{1}{4}(1+\xi_1)(1+\xi_2),\\
+        N^4(\xi_1,\xi_2)=\frac{1}{4}(1-\xi_1)(1+\xi_2).\\
+    \end{gathered}
+\end{equation*}
+
+Также $\forall\xi_1,\xi_2$ справедливо следующее равенство:
+\begin{equation*}
+\sum\limits_{A=1}^{4} N^A(\xi_1,\xi_2)=1.
+\end{equation*}
+
+Запишем разложение $T_e^h$ и $\omega_e^h$ по приведённому базису:
+\begin{equation*}
+    \begin{gathered}
+        T_e^h=\sum\limits_{A=1}^{4} N^A(\mathbf{x})d_e^A,\\
+        \omega_e^h=\sum\limits_{A=1}^{4} N^A(\mathbf{x})c_e^A.
+    \end{gathered}
+\end{equation*}
+
+Вычислим входящие в уравнение (\ref{eq:weak_form_fem}) производные $\frac{\partial T_e^h}{\partial x_i}$ и $\frac{\partial \omega_e^h}{\partial x_i}$.
+\begin{equation*}
+    \begin{gathered}
+        \frac{\partial T_e^h}{\partial x_i}=\sum\limits_{A=1}^{4}
+        N_{,i}^A d_e^A,\\
+        \frac{\partial \omega_e^h}{\partial x_i}=\sum\limits_{A=1}^{4}
+        N_{,i}^A c_e^A,\\
+        N_{,i}^A=N_{,I}^A\xi_{I,i}=\sum\limits_{I=1}^2
+        \frac{\partial N^A}{\partial\xi_I}\frac{\partial\xi_I}{\partial x_i}.
+    \end{gathered}
+\end{equation*}
+
+Для вычисления производной $\frac{\partial\xi_I}{\partial x_i}$ найдем сначала обратную к ней величину $\frac{\partial x_i}{\partial\xi_I}$. Мы можем линейно отобразить область $\Omega^e$ на $\Omega^\xi$, используя введённые базисные функции
+
+\begin{equation*}
+    \begin{aligned}
+\mathbf{x}(\mathbf{\xi})=\sum\limits_{A=1}^{4} N^A(\mathbf{\xi})\mathbf{x}_e^A, \\
+x_i(\xi)=\sum\limits_{A=1}^{4} N^A(\xi)x_{e_i}^A,
+    \end{aligned}
+\end{equation*}
+где $\mathbf{x}_e^A$ - вектор координат соответствующей $A$ вершины в глобальной системе координат. Тогда
+\begin{equation*}
+    \begin{aligned}
+        \frac{\partial x_i}{\partial\xi_I}=\sum\limits_{A=1}^{4} 
+        \frac{\partial N^A}{\partial\xi_I}x_{e_i}^A.
+    \end{aligned}
+\end{equation*}
+
+Например,
+\begin{equation*}
+    \begin{aligned}
+        \frac{\partial x_1}{\partial\xi_1}=
+        -\frac{1}{4}(1-\xi_2)x_1^1 +\frac{1}{4}(1-\xi_2)x_1^2
+        +\frac{1}{4}(1+\xi_2)x_1^3 -\frac{1}{4}(1+\xi_2)x_1^4=\\
+        =-\frac{1}{4}(1-\xi_2)x_1^e +\frac{1}{4}(1-\xi_2)x_1^{e+1}
+        +\frac{1}{4}(1+\xi_2)x_1^{e+1} -\frac{1}{4}(1+\xi_2)x_1^{e}=\\
+        =\frac{1}{2}x_1^{e+1}-\frac{1}{2}x_1^e=
+        \frac{x_1^{e+1}-x_1^e}{2}=\frac{h_1^e}{2},
+    \end{aligned}
+\end{equation*}
+\begin{equation*}
+        \frac{\partial x_1}{\partial\xi_2}=
+        -\frac{1}{4}(1-\xi_1)x_1^e -\frac{1}{4}(1+\xi_1)x_1^{e+1}
+        +\frac{1}{4}(1+\xi_1)x_1^{e+1} +\frac{1}{4}(1-\xi_1)x_1^{e}=0.
+\end{equation*}
+
+Аналогично: $\dfrac{\partial x_2}{\partial\xi_1}=0$ и
+$\dfrac{\partial x_2}{\partial\xi_2}=\dfrac{h_2^e}{2}$, где $h_1^e$ - расстояние между узлами элемента $\Omega^e$ по оси $e_1$, $h_2^e$ по оси $e_2$.
+
+Якобиан рассматриваемого преобразования $J_{iI}=\dfrac{\partial x_i}{\partial\xi_I}$ в матричном виде может быть представлен как
+
+\begin{equation*}
+    J=\begin{pmatrix}
+        \dfrac{\partial x_1}{\partial\xi_1}& \dfrac{\partial x_1}{\partial\xi_2}\\
+        &\\
+        \dfrac{\partial x_2}{\partial\xi_1}& \dfrac{\partial x_2}{\partial\xi_2}\\
+    \end{pmatrix}, \\
+     \det J = \frac{h_1^e h_2^e}{4}.
+\end{equation*}
+
+Поскольку $\det J\neq0$, 
+$\exists J^{-1}=\dfrac{\partial\mathbf{\xi}}{\partial\mathbf{x}}$, т.ч. её компоненты $J_{Ii}=\dfrac{\partial \xi_I}{\partial x_i}$.\\
+
+Используя полученные равенства, последовательно вычислим интегралы, входящие в уравнение (\ref{eq:weak_form_fem}).
+
+\begin{equation*}
+\begin{gathered}
+    I_1^e=\int\limits_{\Omega_e}\omega_{,i}^h q_i^hd\Omega=
+    -\int\limits_{\Omega_e}\omega_{,i}^h \kappa_{ij}T_{,j}^hd\Omega
+    =-\int\limits_{\Omega_e}\left(\sum\limits_A N_{,i}^A c_e^A\right)\kappa_{ij}
+    \left(\sum\limits_B N_{,j}^B d_e^B\right)d\Omega=\\
+     = -\int\limits_{\Omega_e}
+     \left(\sum\limits_A N_{,I}^A\xi_{I,i} c_e^A\right)\kappa_{ij}
+    \left(\sum\limits_B N_{,J}^B \xi_{J,j} d_e^B\right)d\Omega =\\
+    =-\sum\limits_{A,B} c_e^A\left(\int\limits_{\Omega^e}
+    N_{,I}^A\xi_{I,i}\kappa_{ij} N_{,J}^B \xi_{J,j}d\Omega\right)d_e^B=\\
+    =-\sum\limits_{A,B} c_e^A \left(\int\limits_{\Omega^{\xi}}
+    N_{,I}^A\xi_{I,i}\kappa_{ij} N_{,J}^B \xi_{J,j}
+    \det J(\xi)d\Omega^{\xi}\right)d_e^B=\\
+    =-\sum\limits_{A,B} c_e^A \left(\int\limits_{-1}^1\int\limits_{-1}^1
+    N_{,I}^A\xi_{I,i}\kappa_{ij} N_{,J}^B \xi_{J,j}
+    \det J(\xi)\text{d}\xi_1\text{d}\xi_2\right)d_e^B=\\
+    =-\sum\limits_{A,B}c_e^A K_e^{AB} d_e^B = 
+    -\mathbf{c_e^T}\mathbf{K_e}\mathbf{d_e},
+\end{gathered}
+\end{equation*}
+где введено новое обозначение $\mathbf{K_e}$ - матрица теплопроводности элемента. Она симметрична и для прямоугольного элемента имеет вид:
+
+\begin{equation*}
+    \mathbf{K_e}=
+    \begin{pmatrix}
+        K_e^{11}&\ldots& K_e^{14}\\
+        &\ldots\\
+        &&K_e^{44}
+    \end{pmatrix},
+\end{equation*}
+
+а её элементы вычисляются по формуле:
+\begin{equation*}
+    K_e^{AB}=\int\limits_{-1}^1\int\limits_{-1}^1
+    N_{,I}^A\xi_{I,i}\kappa_{ij} N_{,J}^B \xi_{J,j}
+    \det J(\xi)\text{d}\xi_1\text{d}\xi_2
+\end{equation*}
+
+Вычислим второй интеграл, входящий в уравнение (\ref{eq:weak_form_fem})
+\begin{equation*}
+\begin{gathered}
+    I_2^e=-\int\limits_{\Omega^e}\omega^h sd\Omega=
+    -\int\limits_{\Omega^e}\left(\sum\limits_A N^A c_e^A\right)sd\Omega
+    =-\sum\limits_A c_e^A\int\limits_{\Omega^{\xi}}N^A s(\mathbf{x}(\xi))
+    \det J(\xi)d\Omega^{\xi}=\\
+    =-\sum\limits_A c_e^A\int\limits_{-1}^1\int\limits_{-1}^1
+    N^A s(\xi) \det J(\xi)d\xi_1 d\xi_2
+    =-\sum\limits_{A}c_e^A F_e^{int_A}=-\mathbf{c_e^T F_e^{int}}=\\
+   =- <c_e^1\ldots c_e^4>\left(
+        \begin{array}{c}
+            F_e^{int_1}\\
+            \vdots\\
+            F_e^{int^4}
+        \end{array}\right),
+\end{gathered}
+\end{equation*}
+\begin{equation*}
+    F_e^{int_A}=\int\limits_{-1}^1\int\limits_{-1}^1
+    N^A s(\xi) \det J(\xi)d\xi_1 d\xi_2.
+\end{equation*}
+
+Для вычисления последнего интеграла рассмотрим пересечение границы области $\Omega^e$ и границы области $\Omega$, на которой задано условие Неймана: $\partial\Omega_q^e=\partial\Omega^e\cap\partial\Omega_q$. Обозначим $A_N\{A| \mathbf{x_e^A}\in\partial\Omega_q^e\}$ - множество индексов вершин элемента, принадлежащих этой границе. Тогда
+\begin{equation*}
+    \begin{aligned}
+        \int\limits_{\partial\Omega_q^e}\omega^h q_nd\Gamma=
+        \int\limits_{\partial\Omega_q^e}
+        \left(\sum\limits_A N^A c_e^A\right)q_nd\Gamma=
+        \sum\limits_{A\in A_N} c_e^A\int\limits_{\partial\Omega_q^e} N^A q_nd\Gamma=\\
+        \sum\limits_{A\in A_N} c_e^A\int\limits_{\partial\Omega_q^\xi} N^A q_n  
+        \det J_\Gamma d\Gamma^{\xi}=
+        \sum\limits_{A\in A_N}c_e^A\int\limits_{-1}^1 N^A q_n \det J_\Gamma d\xi_A=\\
+        =<c_e^{A_1}\ldots c_e^{A_k}>\left(
+        \begin{array}{c}
+            F^{q_{A_1}}\\
+            \vdots\\
+            F^{q_{A_k}}
+        \end{array}\right),\quad A_1,\ldots,A_k\in A_N
+    \end{aligned}
+\end{equation*}
+\begin{equation*}
+    F^{q_{A_i}}=\int\limits_{-1}^1 N^i q_n \det J_\Gamma d\xi_A
+\end{equation*}
+
+Таким образом, имеем
+\begin{equation*}
+    \int\limits_{\partial\Omega_q^e}\omega^h q_nd\Gamma=
+    <c_e^{A_1},\ldots,c_e^{A_2},\ldots>\left(
+    \begin{array}{c}
+        F^{q_{A_1}}\\
+        0\\
+        \vdots\\
+        0\\
+        F^{q_{A_2}}\\
+        \vdots
+    \end{array}
+    \right)
+    =\mathbf{c_e}^T\mathbf{F_e^q}
+\end{equation*}
+
+И уравнение (\ref{eq:h1_weak_form}) запишется в виде:
+\begin{equation*}
+\begin{gathered}
+    -\sum\limits_{e=1}^{n_{el}}<c_e^1,\ldots,c_e^4>
+    \begin{pmatrix}
+        K_e^{11}&\ldots& K_e^{14}\\
+        &\ldots\\
+        &&K_e^{44}
+    \end{pmatrix}
+    \begin{pmatrix}
+        d_e^1\\
+        \vdots\\
+        d_e^4
+    \end{pmatrix}=\\
+    =-\sum\limits_{e=1}^{n_{el}}<c_e^1,\ldots,c_e^4>
+    \begin{pmatrix}
+        F_e^{int_1}\\
+        \vdots\\
+        F_e^{int_4}
+    \end{pmatrix}+
+    \sum\limits_{e\in E_N}<c_e^1,\ldots,c_e^4>
+    \begin{pmatrix}
+        F^{q_{A_1}}\\
+        0\\
+        \vdots
+    \end{pmatrix},
+\end{gathered}
+\end{equation*}
+\begin{equation}
+    \label{eq:local_eq}
+    \sum\limits_{e=1}^{n_{el}}\mathbf{c_e^T K_e d_e}=
+    \sum\limits_{e=1}^{n_{el}}\mathbf{c_e^T F_e^{int}}-
+    \sum\limits_{e\in E_N}\mathbf{c_e^T F_e^q}.
+\end{equation}
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Вычислите в явном виде все компоненты матрицы $\mathbf{K_e}$ для прямоугольного элемента размерами $2\times3$ в предположении, что  $\kappa_{ij}=\kappa_0\delta_{ij}$.
+  \item Пусть источник тепла не зависит от координаты, т.е. $s=s_0$. Вычислите $F_e^{int}$ для элемента, использованного выше.
+\end{enumerate}
+
+\subsection{Глобальные степени свободы}
+
+Пусть для точки $A_i$: $i$ - номер в глобальной нумерации, а $p_k^i$ - номер в локальной нумерации элемента $e_k$, $N$ - число глобальных степеней свободы. Зная это соотношение, мы можем переписать уравнение (\ref{eq:local_eq}) в матричном виде:
+\begin{equation*}
+\begin{gathered}
+    <c_1,\ldots,c_{N}>
+    \begin{pmatrix}
+        K^{11}&\ldots& K^{1N}\\
+        &\ldots\\
+        &&K^{NN}
+    \end{pmatrix}
+    \begin{pmatrix}
+        d_1\\
+        \vdots\\
+        d_N
+    \end{pmatrix}=\\
+    =<c_1,\ldots,c_N>
+    \begin{pmatrix}
+        F^{int_1}\\
+        \vdots\\
+        F^{int_N}
+    \end{pmatrix}-
+    <c_1,\ldots,c_N>
+    \begin{pmatrix}
+        F^{q_{A_1}}\\
+        0\\
+        \vdots\\
+        F^{q_{A_N}}
+    \end{pmatrix},
+\end{gathered}
+\end{equation*}
+\begin{equation}
+    \bar{\mathbf{c}}^T\overline{\mathbf{K}}\bar{\mathbf{d}}=
+    \bar{\mathbf{c}}^T\overline{\mathbf{F^{int}}}-
+    \bar{\mathbf{c}}^T\overline{\mathbf{F^q}},
+\end{equation}
+
+где размерность векторов $\bar{\mathbf{c}}$ и $\bar{\mathbf{d}}$ равна $N$, $\overline{\mathbf{K}}$ - матрица размерностью $N\times N$, а
+
+\begin{equation*}
+\begin{aligned}
+    \overline{K_{ij}} = \sum\limits_{k:A_i\in e_k} K_{e_k}^{p_k^i p_k^j}\\
+    \overline{F^{int}_i}=\sum\limits_{k:A_i\in e_k} F_{e_k}^{int_{p_k^i}}\\
+    \overline{F^{q}_i}=\sum\limits_{k:A_i\in e_k} F_{e_k}^{q_{p_k^i}}
+\end{aligned}
+\end{equation*}
+
+Для более полного понимания процесса сборки глобальных матриц рассмотрим разбиение квадратной области $\Omega$ на 4 элемента (см. рис. \ref{example}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\linewidth]{Pictures/example.png}
+\caption{Соответствие между глобальной и локальной нумерацией узлов. Нанесена глобальная нумерация}
+\label{example}
+\end{figure}
+
+Выпишем все матрицы покомпонентно. Для простоты будем считать, что на всей границе заданы условия Дирихле.
+
+\begingroup
+\setlength\arraycolsep{1pt}
+\small
+\begin{equation*}
+    \overline{\mathbf{K}}=
+    \begin{pmatrix}
+        K_{e_1}^{11}& K_{e_1}^{12}& 0& K_{e_1}^{14}& K_{e_1}^{13}&0&0&0&0\\
+        K_{e_1}^{12}& K_{e_1}^{22}+K_{e_2}^{11}& K_{e_2}^{12}&K_{e_1}^{24}&
+        K_{e_1}^{23}+K_{e_2}^{14}&K_{e_2}^{13}&0&0&0\\
+        0&K_{e_2}^{12}&K_{e_2}^{22}&0&K_{e_2}^{24}&K_{e_2}^{23}&0&0&0\\
+        K_{e_1}^{14}&K_{e_1}^{24}&0&K_{e_1}^{44}+K_{e_3}^{11}& K_{e_1}^{34}+K_{e_3}^{12}&0&K_{e_3}^{14}&K_{e_3}^{13}& 0\\
+        K_{e_1}^{13}& K_{e_1}^{23}+K_{e_2}^{14}& K_{e_2}^{24}& K_{e_1}^{34}+K_{e_2}^{12}&K_{e_1}^{33}+K_{e_2}^{44}+& 
+        K_{e_2}^{34}+K_{e_4}^{12}& K_{e_3}^{24}& K_{e_3}^{23}+K_{e_4}^{14}& K_{e_4}^{13}\\
+        &&&&+K_{e_3}^{22}+K_{e_4}^{11}&&&&\\
+        0& K_{e_2}^{13}& K_{e_2}^{23}&0&K_{e_2}^{34}+K_{e_4}^{12}& K_{e_2}^{33}+K_{e_4}^{22}& 0& K_{e_4}^{24}& K_{e_4}^{23}\\
+        0& 0& 0& K_{e_3}^{14}& K_{e_3}^{24}& 0& K_{e_3}^{44}& K_{e_3}^{34}&0\\
+        0&0&0& K_{e_3}^{13}& K_{e_3}^{23}+K_{e_4}^{14}& K_{e_4}^{24}& K_{e_3}^{34}& K_{e_3}^{33}+K_{e_4}^{44}& K_{e_4}^{34}\\
+        0&0&0&0& K_{e_4}^{13}& K_{e_4}^{23}& 0& K_{e_4}^{34}& K_{e_4}^{33}
+    \end{pmatrix}
+\end{equation*}
+\endgroup
+
+\begin{equation*}
+    \overline{\mathbf{F^{int}}}=\begin{pmatrix}
+        F_{e_1}^{int_1}\\
+        F_{e_1}^{int_2}+F_{e_2}^{int_1}\\
+        F_{e_2}^{int_2}\\
+        F_{e_1}^{int_4}+F_{e_3}^{int_1}\\
+        F_{e_1}^{int_3}+F_{e_2}^{int_4}+F_{e_3}^{int_2}+F_{e_4}^{int_1}\\
+        F_{e_2}^{int_3}+F_{e_4}^{int_2}\\
+        F_{e_3}^{int_4}\\
+        F_{e_3}^{int_3}+F_{e_4}^{int_4}\\
+        F_{e_4}^{int_3}
+    \end{pmatrix}
+\end{equation*}
+
+Пусть построена таблица соответствия глобальной нумерации узлов во всей области и локальной нумерации узлов в каждом отдельном элементе. Для рассматриваемого случая она имеет вид:
+
+\begin{equation*}
+   \mathbf{L}=
+    \begin{pmatrix}
+       1 & 2 & 5 & 4\\
+       2 & 3 & 6 & 5\\
+       4 & 5 & 8 & 7\\
+       5 & 6 & 9 & 8
+    \end{pmatrix}
+\end{equation*}
+
+Тогда, например, матрица $\overline{\mathbf{K}}$ может быть построена простым алгоритмом:
+
+\begin{lstlisting}
+For [e = 1, e <= n_el*n_el, e++,
+    For[i = 1, i <= n_el, i++,
+        For[j = 1, j <= n_el, j++,
+            I = L[[e, i]];
+            J = L[[e, j]];
+            K[[I, J]] += K_e[[i, j]];
+        ]
+    ]
+]
+\end{lstlisting}
+
+Обозначим $\overline{A_D}=\{\bar{A_1},\bar{A_2},\dots\}$ - множество точек, на котором
+задано условие Дирихле, а $N_D=m(\overline{A_D})$ - количество точек в $\overline{A_D}$. Нам известны величины $\overline{d}_{\overline{A_i}}$. Удалим из матрицы соответствующие строки с номерами $\overline{A_i}$. Пусть $\mathbf{K}^{\overline{A_i}}$ - столбец получившейся матрицы с номером $\overline{A_i}$. Перенесем данные столбцы в правую часть уравнения, умножая их на известное в данном узле значение искомой функции (равно степени свободы в нём). Получим матрицу $\mathbf{K}$ размером $(N-N_D)\times(N-N_D)$. После преобразований получим итоговую систему:
+\begin{equation*}
+    \begin{gathered}
+    \mathbf{c}^T \mathbf{K}\mathbf{d}=
+    \mathbf{c}^T\mathbf{F^{int}}-
+    \mathbf{c}^T\mathbf{F^q}-
+    \sum\limits_{\overline{A}\in\overline{A_D}}
+    \mathbf{c}^T \mathbf{K}^{\overline{A}} \mathbf{d}^{\overline{A}}=\mathbf{c}^T\mathbf{F},\\
+    \mathbf{Kd=F}.
+    \end{gathered}
+\end{equation*}
+
+Для рассматриваемого нами разбиения области $\Omega$ единственной точкой с неизвестным значением $\mathbf{d}$ является точка 5, таким образом, получаем
+
+\begin{equation*}
+    \begin{gathered}
+        K = K_{e_1}^{33}+K_{e_2}^{44}+K_{e_3}^{22}+K_{e_4}^{11}\\
+        F^{int} = F_{e_1}^{int_3}+F_{e_2}^{int_4}+F_{e_3}^{int_2}+F_{e_4}^{int_1}\\
+        K^{\overline{A}}\in\{K_{e_1}^{13}, K_{e_1}^{23}+K_{e_2}^{14}, K_{e_2}^{24}, K_{e_1}^{34}+K_{e_2}^{12}, K_{e_2}^{34}+K_{e_4}^{12}, K_{e_3}^{24}, K_{e_3}^{23}+K_{e_4}^{14}, K_{e_4}^{13}\}
+    \end{gathered}
+\end{equation*}
+
+\textbf{Практическое задание}
+
+ Пусть рассматриваемая область представляет собой квадрат с началов в центре координат и стороной 2. Пусть она равномерно разделена на 25 конечных элементов. Постройте в явном виде матрицу $\mathbf{L}$, т.ч. её $i$ строка содержит глобальные номера узлов $i$ элемента в том порядке, который соответствует правилу их локальной нумерации.
+
+\subsection{Численное интегрирование}
+
+При составлении локальных матриц задачи для нахождения их элементов необходимо вычислять интегралы, включающие в себя зависимость $\kappa_{ij}(\mathbf{x})$, базисные функции и их производные. В том случае, если эти зависимости имеют достаточно сложный вид, или используются базисные функции высоких порядков, аналитическое интегрирование может быть громоздким и сложновыполнимым. Рассмотрим здесь подход, позволяющий численно вычислять интегралы от полиномиальных выражений с гарантированной точностью. Этот подход носит название квадратур Гаусса.
+
+Начнём рассмотрение с одномерного случая. Рассмотрим равенство
+$$
+\int_{-1}^{1}g(\xi)d\xi=\sum_{l=1}^{n_{int}}g(\xi_l)w_l,
+$$
+где $n_{int}$ - число точек интегрирования, $\xi_l$ - их координаты, $w_l$ - веса, связанные с соответствующими точками.
+Если потребовать, чтобы данное равенство было справедливо для всех постоянных функций, потом для всех полиномов первой степени, потом для всех полиномов второй степени и т.д., то можно получить систему уравнений на $\xi_l$ и $w_l$.
+
+Справедлива следующая теорема. Если в качестве точек интегрирования взять нули полиномов Лежандра, а в качестве весов - интегралы от интерполяционных полиномов Лагранжа, то данное тождество будет справедливо для всех полиномов, степень которых не превосходит $2n_{int} - 1$. В таблице ниже приведены параметры для нескольких значений $n_{int}$.
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+ \hline
+ $n_{int} = 1$ & $\xi_1 = 0$ & $w_1 = 2$ & $2n_{int}-1=1$ \\
+  \hline
+ $n_{int} = 2$ & $\xi_1 = -\frac{1}{\sqrt{3}}$ & $w_1 = 1$ & $2n_{int}-1=3$ \\
+ & $\xi_2 = \frac{1}{\sqrt{3}}$ & $w_1 = 1$ & \\
+  \hline
+ $n_{int} = 3$ & $\xi_1 = -\sqrt{\frac{3}{5}}$ & $w_1 = \frac{5}{9}$ & $2n_{int}-1=5$ \\
+ & $\xi_2 = 0$ & $w_1 = \frac{8}{9}$ &\\
+ & $\xi_3 = \sqrt{\frac{3}{5}}$ & $w_1 = \frac{5}{9}$ &\\
+ \hline
+\end{tabular}
+\end{center}
+
+Перейдём к нашему двумерному случаю. Тогда может быть записано аналогичное равенство
+\begin{equation*}
+\begin{gathered}
+\int_{-1}^{1}\int_{-1}^{1}g(\xi,\eta)d\xi d\eta=
+\int_{-1}^{1}\left(\sum_{l=1}^{n_{int}}g(\xi_l,\eta)w^\xi_l\right) d\eta= \\
+=\sum_{m=1}^{n_{int}}\sum_{l=1}^{n_{int}}g(\xi_l,\eta_m)w^\xi_lw^\eta_m=
+\sum_{l,m=1}^{n_{int}}g(\xi_l,\eta_m)w_{l,m}.
+\end{gathered}
+\end{equation*}
+
+В таблице ниже приведены параметры для нескольких значений $n_{int}$ (число точек вдоль одной оси).
+
+\begin{center}
+\begin{tabular}{ |c|c|c|c| } 
+ \hline
+ $n_{int} = 1$ & $\xi_1 = 0,\eta_1 = 0$ & $w_1 = 4$ & $2n_{int}-1=1$ \\
+  \hline
+ $n_{int} = 2$ & $\xi_1 = -\frac{1}{3},\eta_1 = -\frac{1}{3}$ & $w_1 = 1$ & $2n_{int}-1=3$ \\
+ & $\xi_2 = -\frac{1}{3},\eta_2 = \frac{1}{3}$ & $w_2 = 1$ & \\
+ & $\xi_3 = \frac{1}{3},\eta_3 = -\frac{1}{3}$ & $w_3 = 1$ & \\
+ & $\xi_4 = \frac{1}{3},\eta_4 = \frac{1}{3}$ & $w_4 = 1$ & \\
+ \hline
+\end{tabular}
+\end{center}
+
+\textbf{Практическое задание}
+\begin{enumerate}
+  \item Реализуйте на языке C++ функцию, вычисляющую интеграл от заданной одномерной функции с помощью квадратур Гаусса. В функцию должны передаваться два параметра - указатель на функцию $g(\xi)$ и $n_{int}$.
+  \item Реализуйте на языке C++ функцию, вычисляющую интеграл от заданной двумерной функции с помощью квадратур Гаусса. В функцию должны передаваться два параметра - указатель на функцию $g(\xi,\eta)$ и $n_{int}$.
+\end{enumerate}
+
+\clearpage
