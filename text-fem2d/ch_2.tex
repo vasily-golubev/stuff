@@ -2,11 +2,11 @@
 
 \subsection{Сильная постановка (strong form)}
 
-Рассмотрим задачу о пространственном распределении (в установившемся режиме) температуры в заданной двумерной области пространства. Математически она может быть записана следующим образом (см. рис. \ref{model}).
+Рассмотрим задачу о пространственном распределении (в~установившемся режиме) температуры в заданной двумерной области пространства. Математически она может быть записана следующим образом (см. рис. \ref{model}).
 Найти распределение температуры $T\left(\mathbf{x}=\begin{bmatrix}
            x_{1} \\
            x_{2}
-         \end{bmatrix}\right)$ в двумерной области $\Omega$, такое что:
+         \end{bmatrix}\right)$ в двумерной области $\Omega$, такое что
 \begin{equation}
 \label{eq:strong_form}
 \begin{gathered}
@@ -15,7 +15,7 @@
     \kappa_{ij}\frac{\partial T}{\partial x_j},\quad i=1,2
 \end{gathered}
 \end{equation}
-где $s(\mathbf{x})$ - внутренние источники тепла, $\mathbf{q}$ - вектор потока вытекающего тепла, $\kappa_{ij}$ - тензор теплопроводности, который должен быть положительно определенным, т.к. поток тепла возможен лишь от более нагретого к менее нагретому телу.
+где $s(\mathbf{x})$~--- внутренние источники тепла, $\mathbf{q}$~--- вектор потока вытекающего тепла, $\kappa_{ij}$~--- тензор теплопроводности, который должен быть положительно определенным, т.к. поток тепла возможен лишь от более нагретого к менее нагретому телу.
 
 \begin{figure}[H]
 \centering
@@ -24,15 +24,15 @@
 \label{model}
 \end{figure}
 
-Для того, чтобы доопределить задачу, на границе рассматриваемой области $\partial\Omega$ должны быть заданы дополнительные условия:
+Для того чтобы доопределить задачу, на границе рассматриваемой области $\partial\Omega$ должны быть заданы дополнительные условия:
 
 $T(\textbf{x}) = T_g(\textbf{x}),\quad \textbf{x}\in \partial \Omega_T$
-- граничное условие Дирихле;
+~--- граничное условие Дирихле;
 
 $\mathbf{q}\cdot\mathbf{n}=q_n,\quad \textbf{x}\in\Omega_q$
-- граничное условие Неймана.
+~--- граничное условие Неймана.
 
-Отметим, что здесь $\mathbf{n}$ - внешняя нормаль к области $\Omega$, а границы $\partial \Omega_T$ и $\partial \Omega_q$ удовлетворяют следующим условиям:
+Отметим, что здесь $\mathbf{n}$~--- внешняя нормаль к области $\Omega$, а границы $\partial \Omega_T$ и $\partial \Omega_q$ удовлетворяют следующим условиям:
 
 \begin{equation*}
     \begin{gathered}
@@ -51,18 +51,18 @@ $\mathbf{q}\cdot\mathbf{n}=q_n,\quad \textbf{x}\in\Omega_q$
 
 \subsection{Слабая постановка (weak form)}
 
-В общем случае, может быть записано следующее интегральное уравнение, называющееся "слабой формой"\ (weak form). Найти функцию 
+В общем случае, может быть записано следующее интегральное уравнение, называющееся \textit{слабой формой} (weak form). Найти функцию 
 $T(\mathbf{x})\in S\{T| T(\mathbf{x})=T_g(\mathbf{x}), \mathbf{x}\in\partial\Omega_T\}$, такую что $\forall\omega\in V\{\omega | \omega(\mathbf{x})=0,\mathbf{x}\in\partial\Omega_T\}$ справедливо:
 \begin{equation}
 \label{eq:weak_form}
     \int_{\Omega}\omega_{,i}q_id\Omega =
     - \int_{\Omega}\omega sd\Omega +
-    \int_{\partial\Omega_q}\omega q_nd\Gamma
+    \int_{\partial\Omega_q}\omega q_nd\Gamma,
 \end{equation}
 \begin{equation*}
     \begin{gathered}
-        q_i=-\kappa_{ij}T_{,j}\\
-        \omega_{,i}q_i=\sum\limits_{i=1}^2(\frac{\partial\omega}{\partial x_i}q_i)=-\sum\limits_{i,j=1}^2(\frac{\partial\omega}{\partial x_i}\kappa_{ij}\frac{\partial T}{\partial x_j})\\
+        q_i=-\kappa_{ij}T_{,j},\\
+        \omega_{,i}q_i=\sum\limits_{i=1}^2(\frac{\partial\omega}{\partial x_i}q_i)=-\sum\limits_{i,j=1}^2(\frac{\partial\omega}{\partial x_i}\kappa_{ij}\frac{\partial T}{\partial x_j}).\\
     \end{gathered}
 \end{equation*}
 
