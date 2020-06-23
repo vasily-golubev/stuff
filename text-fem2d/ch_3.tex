@@ -138,8 +138,8 @@ $\exists J^{-1}=\dfrac{\partial\mathbf{\xi}}{\partial\mathbf{x}}$, т.ч. её компо
 
 \begin{equation*}
 \begin{gathered}
-    I_1^e=\int\limits_{\Omega_e}\omega_{,i}^h q_i^hd\Omega=
-    -\int\limits_{\Omega_e}\omega_{,i}^h \kappa_{ij}T_{,j}^hd\Omega
+    I_1^e=\int\limits_{\Omega_e}\omega_{,i}^h q_i^hd\Omega=\\
+    =-\int\limits_{\Omega_e}\omega_{,i}^h \kappa_{ij}T_{,j}^hd\Omega
     =-\int\limits_{\Omega_e}\left(\sum\limits_A N_{,i}^A c_e^A\right)\kappa_{ij}
     \left(\sum\limits_B N_{,j}^B d_e^B\right)d\Omega=\\
      = -\int\limits_{\Omega_e}
@@ -179,12 +179,13 @@ $\exists J^{-1}=\dfrac{\partial\mathbf{\xi}}{\partial\mathbf{x}}$, т.ч. её компо
 \begin{equation*}
 \begin{gathered}
     I_2^e=-\int\limits_{\Omega^e}\omega^h sd\Omega=
-    -\int\limits_{\Omega^e}\left(\sum\limits_A N^A c_e^A\right)sd\Omega
+    -\int\limits_{\Omega^e}\left(\sum\limits_A N^A c_e^A\right)sd\Omega=\\
     =-\sum\limits_A c_e^A\int\limits_{\Omega^{\xi}}N^A s(\mathbf{x}(\xi))
     \det J(\xi)d\Omega^{\xi}=\\
     =-\sum\limits_A c_e^A\int\limits_{-1}^1\int\limits_{-1}^1
     N^A s(\xi) \det J(\xi)d\xi_1 d\xi_2
-    =-\sum\limits_{A}c_e^A F_e^{int_A}=-\mathbf{c_e^T F_e^{int}}=\\
+    =-\sum\limits_{A}c_e^A F_e^{int_A}=\\
+    =-\mathbf{c_e^T F_e^{int}}
    =- <c_e^1\ldots c_e^4>\left(
         \begin{array}{c}
             F_e^{int_1}\\
@@ -415,7 +416,8 @@ For [e = 1, e <= n_el*n_el, e++,
     \begin{gathered}
         K = K_{e_1}^{33}+K_{e_2}^{44}+K_{e_3}^{22}+K_{e_4}^{11},\\
         F^{int} = F_{e_1}^{int_3}+F_{e_2}^{int_4}+F_{e_3}^{int_2}+F_{e_4}^{int_1},\\
-        K^{\overline{A}}\in\{K_{e_1}^{13}, K_{e_1}^{23}+K_{e_2}^{14}, K_{e_2}^{24}, K_{e_1}^{34}+K_{e_2}^{12}, K_{e_2}^{34}+K_{e_4}^{12}, K_{e_3}^{24}, K_{e_3}^{23}+K_{e_4}^{14}, K_{e_4}^{13}\}.
+        K^{\overline{A}}\in\{K_{e_1}^{13}, K_{e_1}^{23}+K_{e_2}^{14}, K_{e_2}^{24}, K_{e_1}^{34}+K_{e_2}^{12}, K_{e_2}^{34}+K_{e_4}^{12}, K_{e_3}^{24},\\
+	K_{e_3}^{23}+K_{e_4}^{14}, K_{e_4}^{13}\}.
     \end{gathered}
 \end{equation*}
 
